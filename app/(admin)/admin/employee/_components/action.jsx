@@ -1,13 +1,8 @@
-"use client"
-
-import { LuEllipsisVertical, LuSquarePen, LuTrash } from "react-icons/lu"
-import { Box, Icon, Menu, Dialog, Portal, useDisclosure } from "@chakra-ui/react"
-import DeleteDialog from "./delete"
+import { LuDownload, LuEllipsisVertical, LuPrinter, LuTrash } from "react-icons/lu"
+import { Box, Icon, Menu, Portal } from "@chakra-ui/react"
 import Link from "next/link"
 
 function Action({ id }) {
-    const { open, onOpen, onClose } = useDisclosure()
-
     return (
         <>
             <Menu.Root positioning={{ placement: "left-start" }}>
@@ -22,31 +17,33 @@ function Action({ id }) {
                     <Menu.Positioner>
                         <Menu.Content>
                             <Menu.Item
-                                value="edit"
+                                value="print"
                                 cursor="pointer"
-                                as={Link} href={`/admin/users/${id}`}
+                            // as={Link} href={`/print/${id}`}
                             >
-                                <Icon><LuSquarePen /></Icon>
-                                Edit
+                                <Icon><LuPrinter /></Icon>
+                                Print
+                            </Menu.Item>
+                            <Menu.Item
+                                value="download"
+                                cursor="pointer"
+                            >
+                                <Icon><LuDownload /></Icon>
+                                Download
                             </Menu.Item>
                             <Menu.Item
                                 value="delete"
                                 cursor="pointer"
                                 color="fg.error"
                                 _hover={{ bg: "bg.error", color: "fg.error" }}
-                                onClick={onOpen}
-                            ><Icon><LuTrash /></Icon>Delete</Menu.Item>
+                            >
+                                <Icon><LuTrash /></Icon>
+                                Delete
+                            </Menu.Item>
                         </Menu.Content>
                     </Menu.Positioner>
                 </Portal>
             </Menu.Root>
-            <Dialog.Root
-                open={open}
-                onOpenChange={onClose}
-                role="alertdialog"
-            >
-                <DeleteDialog id={id} />
-            </Dialog.Root>
         </>
     )
 }

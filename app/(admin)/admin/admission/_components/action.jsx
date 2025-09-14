@@ -1,8 +1,13 @@
+"use client"
+
 import { LuDownload, LuEllipsisVertical, LuPrinter, LuTrash } from "react-icons/lu"
-import { Box, Icon, Menu, Portal } from "@chakra-ui/react"
+import { Box, Dialog, Icon, Menu, Portal, useDisclosure } from "@chakra-ui/react"
+import DeleteDialog from "./delete"
 import Link from "next/link"
 
 function Action({ id }) {
+    const { open, onOpen, onClose } = useDisclosure()
+
     return (
         <>
             <Menu.Root positioning={{ placement: "left-start" }}>
@@ -36,14 +41,19 @@ function Action({ id }) {
                                 cursor="pointer"
                                 color="fg.error"
                                 _hover={{ bg: "bg.error", color: "fg.error" }}
-                            >
-                                <Icon><LuTrash /></Icon>
-                                Delete
-                            </Menu.Item>
+                                onClick={onOpen}
+                            ><Icon><LuTrash /></Icon>Delete</Menu.Item>
                         </Menu.Content>
                     </Menu.Positioner>
                 </Portal>
             </Menu.Root>
+            <Dialog.Root
+                open={open}
+                onOpenChange={onClose}
+                role="alertdialog"
+            >
+                <DeleteDialog id={id} />
+            </Dialog.Root>
         </>
     )
 }

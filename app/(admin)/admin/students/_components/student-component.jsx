@@ -1,7 +1,8 @@
-import { Alert, Flex, Table, Text, Avatar } from "@chakra-ui/react";
+import { Alert, Flex, Table, Text, Avatar, Dialog } from "@chakra-ui/react";
 import Status from "@/components/admin/status";
 import Action from "./action";
 import { getAllStudents } from "@/app/actions/students";
+import StudentDialog from "./student-dialog";
 
 async function StudentComponent({ queryString }) {
     let data, error;
@@ -36,20 +37,20 @@ async function StudentComponent({ queryString }) {
                         </Text>
                     </Table.Cell>
                     <Table.Cell>
-                        <Flex
-                            align="center"
-                            gap={3}
-                        // as={Link}
-                        // href={`/admin/students/${std?._id}`}
-                        >
-                            <Avatar.Root>
-                                <Avatar.Fallback name={std?.fullName} />
-                                <Avatar.Image src={`${process.env.API_URL}/upload/${std?.avatar}`} />
-                            </Avatar.Root>
-                            <Text fontWeight="semibold">
-                                {std?.fullName}
-                            </Text>
-                        </Flex>
+                        <Dialog.Root size={{ mdDown: "full", md: "lg" }} scrollBehavior="outside">
+                            <Dialog.Trigger asChild>
+                                <Flex align="center" gap={3} cursor="pointer">
+                                    <Avatar.Root>
+                                        <Avatar.Fallback name={std?.fullName} />
+                                        <Avatar.Image src={`${process.env.API_URL}/upload/${std?.avatar}`} />
+                                    </Avatar.Root>
+                                    <Text fontWeight="semibold">
+                                        {std?.fullName}
+                                    </Text>
+                                </Flex>
+                            </Dialog.Trigger>
+                            <StudentDialog student={std} />
+                        </Dialog.Root>
                     </Table.Cell>
                     <Table.Cell>{std?.phone[0]}</Table.Cell>
                     <Table.Cell>
