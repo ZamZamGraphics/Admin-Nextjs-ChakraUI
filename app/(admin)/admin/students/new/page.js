@@ -1,9 +1,12 @@
 "use client"
 
+import CalendarInput from "@/components/admin/calendar-input";
 import { Avatar, Box, Button, createListCollection, Field, Flex, Grid, GridItem, HStack, Input, Portal, RadioGroup, Select, Text } from "@chakra-ui/react"
 import { useState } from "react"
+import { useFormStatus } from "react-dom";
 
 function NewStudentPage() {
+    const { pending } = useFormStatus();
     const [avatar, setAvatar] = useState(null);
     const [avatarImage, setAvatarImage] = useState("");
 
@@ -167,7 +170,7 @@ function NewStudentPage() {
                     </GridItem>
                     <GridItem>
                         <Field.Root invalid>
-                            <Input
+                            <CalendarInput
                                 name='birthDay'
                                 value={student.birthDay}
                                 onChange={handleChange}
@@ -305,7 +308,7 @@ function NewStudentPage() {
                     mt={8}
                     type='submit'
                     colorPalette="gray"
-                // disabled={pending}
+                    loading={pending}
                 >Add New Student</Button>
             </form>
         </Box>

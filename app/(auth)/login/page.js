@@ -86,7 +86,11 @@ function LoginPage() {
                             gap={2} // space between items
                             alignItems="stretch"
                         >
-                            <Button type='submit' colorPalette="gray" disabled={pending}>Sign in</Button>
+                            <Button
+                                type='submit'
+                                colorPalette="gray"
+                                loading={pending}
+                            >Sign in</Button>
                             <Link href="/forgott">Forgotten password?</Link>
                         </Card.Footer>
                     </form>
