@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Alert, Flex, Table, Text, Avatar, Badge } from "@chakra-ui/react";
+import { Alert, Flex, Table, Text, Avatar } from "@chakra-ui/react";
 import { getAllAdmission } from "@/app/actions/admissions"
 import dayjs from 'dayjs';
 import Action from "./action";
 import Status from "@/components/admin/status";
+import AdmissionDue from "./admission-due";
 
 async function AdmissionComponent({ queryString }) {
     let data, error;
@@ -55,7 +56,13 @@ async function AdmissionComponent({ queryString }) {
                     </Table.Cell>
                     <Table.Cell>{admission?.course?.name}</Table.Cell>
                     <Table.Cell>{admission?.batchNo}</Table.Cell>
-                    <Table.Cell>{admission?.due}</Table.Cell>
+                    <Table.Cell>
+                        <AdmissionDue
+                            paymentHistory={admission?.paymentHistory}
+                            payableAmount={admission?.payableAmount}
+                            due={admission?.due}
+                        />
+                    </Table.Cell>
                     <Table.Cell>
                         {admission?.nextPay ? (
                             dayjs(admission?.nextPay).format("DD-MM-YYYY")

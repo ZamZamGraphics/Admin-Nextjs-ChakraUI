@@ -11,7 +11,9 @@ export async function middleware(req) {
     }
 
     // 🛠 Protect admin routes
-    if (pathname.startsWith("/admin")) {
+    const privateRoute = ["/admin", "/invoice"];
+
+    if (privateRoute.some(route => pathname.startsWith(route))) {
         if (!token) {
             return NextResponse.redirect(new URL("/login", req.url))
         }
@@ -19,7 +21,7 @@ export async function middleware(req) {
         try {
             // Use TextEncoder for Edge compatibility
             const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-            const { payload } = await jwtVerify(token, secret);
+            await jwtVerify(token, secret);
         } catch (error) {
             const res = NextResponse.redirect(new URL("/login", req.url))
             res.cookies.delete("token")
@@ -40,6 +42,7 @@ export async function middleware(req) {
 export const config = {
     matcher: [
         "/admin/:path*",
+        "/invoice",
         "/login",
         "/",
     ],

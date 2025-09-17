@@ -1,14 +1,18 @@
 "use client"
 
-import CalendarInput from "@/components/admin/calendar-input";
-import { Avatar, Box, Button, createListCollection, Field, Flex, Grid, GridItem, HStack, Input, Portal, RadioGroup, Select, Text } from "@chakra-ui/react"
 import { useState } from "react"
 import { useFormStatus } from "react-dom";
+import CalendarInput from "@/components/admin/calendar-input";
+import { Alert, Avatar, Box, Button, createListCollection, Field, Flex, Grid, GridItem, HStack, Input, Portal, RadioGroup, Select, Text } from "@chakra-ui/react"
+import { addStudent } from "@/app/actions/students";
+import { parseDate } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 function NewStudentPage() {
     const { pending } = useFormStatus();
     const [avatar, setAvatar] = useState(null);
     const [avatarImage, setAvatarImage] = useState("");
+    const [error, setError] = useState("")
 
     const [student, setStudent] = useState({
         fullName: "",
@@ -28,6 +32,8 @@ function NewStudentPage() {
         education: "",
         reference: "",
     })
+
+    const router = useRouter()
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -53,10 +59,37 @@ function NewStudentPage() {
         reader.readAsDataURL(file);
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log(avatar)
-        console.log(student)
+        try {
+            const formData = new FormData();
+
+            if (avatar) formData.append("avatar", avatar);
+
+            Object.entries(student).forEach(([key, value]) => {
+                if (key === "bloodGroup" && Array.isArray(value)) {
+                    formData.append(key, value[0]);
+                } else if (key === "birthDay") {
+                    const dob = parseDate(student.birthDay) || ""
+                    formData.append(key, dob);
+                } else {
+                    formData.append(key, value);
+                }
+            });
+            formData.append("status", "Pending");
+
+            const response = await addStudent(formData);
+
+            if (response?.success) {
+                router.push(`/admin/admission/new?studentId=${response.studentId}`)
+            }
+
+            if (response?.errors) {
+                setError({ ...response?.errors });
+            }
+        } catch (e) {
+            setError({ message: e.message });
+        }
     }
 
     return (
@@ -89,50 +122,60 @@ function NewStudentPage() {
                             <Avatar.Image src={avatarImage || null} />
                         </Avatar.Root>
                     </label>
+                    {error?.message &&
+                        <Alert.Root status="error">
+                            <Alert.Indicator />
+                            <Alert.Title>{error?.message}</Alert.Title>
+                        </Alert.Root>
+                    }
                 </Flex>
                 <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap="6">
                     <GridItem colSpan={{ base: 1, md: 2 }}>
-                        <Field.Root invalid>
+                        <Field.Root invalid={error?.fullName}>
                             <Input
                                 name='fullName'
                                 value={student.fullName}
                                 onChange={handleChange}
                                 placeholder="Student Name"
                             />
-                            <Field.ErrorText>Student Name is required</Field.ErrorText>
+                            <Field.ErrorText>{error?.fullName?.msg}</Field.ErrorText>
                         </Field.Root>
                     </GridItem>
                     <GridItem>
-                        <Field.Root invalid>
+                        <Field.Root invalid={error?.fathersName}>
                             <Input
                                 name='fathersName'
                                 value={student.fathersName}
                                 onChange={handleChange}
                                 placeholder="Fathers Name"
                             />
-                            <Field.ErrorText>Fathers Name is required</Field.ErrorText>
+                            <Field.ErrorText>
+                                {error?.fathersName?.msg}
+                            </Field.ErrorText>
                         </Field.Root>
                     </GridItem>
                     <GridItem>
-                        <Field.Root invalid>
+                        <Field.Root invalid={error?.mothersName}>
                             <Input
                                 name='mothersName'
                                 value={student.mothersName}
                                 onChange={handleChange}
                                 placeholder="Mothers Name"
                             />
-                            <Field.ErrorText>Mothers Name is required</Field.ErrorText>
+                            <Field.ErrorText>
+                                {error?.mothersName?.msg}
+                            </Field.ErrorText>
                         </Field.Root>
                     </GridItem>
                     <GridItem colSpan={{ base: 1, md: 2 }}>
-                        <Field.Root invalid>
+                        <Field.Root invalid={error?.present}>
                             <Input
                                 name='present'
                                 value={student.present}
                                 onChange={handleChange}
                                 placeholder="Present Address"
                             />
-                            <Field.ErrorText>Present Address is required</Field.ErrorText>
+                            <Field.ErrorText>{error?.present?.msg}</Field.ErrorText>
                         </Field.Root>
                     </GridItem>
                     <GridItem colSpan={{ base: 1, md: 2 }}>
@@ -146,7 +189,7 @@ function NewStudentPage() {
                         </Field.Root>
                     </GridItem>
                     <GridItem>
-                        <Field.Root invalid>
+                        <Field.Root invalid={error?.stdPhone}>
                             <Input
                                 name='stdPhone'
                                 type="tel"
@@ -154,11 +197,11 @@ function NewStudentPage() {
                                 onChange={handleChange}
                                 placeholder="Student Mobile Number"
                             />
-                            <Field.ErrorText>Present Address is required</Field.ErrorText>
+                            <Field.ErrorText>{error?.stdPhone?.msg}</Field.ErrorText>
                         </Field.Root>
                     </GridItem>
                     <GridItem>
-                        <Field.Root>
+                        <Field.Root invalid={error?.guardianPhone}>
                             <Input
                                 name='guardianPhone'
                                 type="tel"
@@ -166,21 +209,24 @@ function NewStudentPage() {
                                 onChange={handleChange}
                                 placeholder="Guardian Number"
                             />
+                            <Field.ErrorText>
+                                {error?.guardianPhone?.msg}
+                            </Field.ErrorText>
                         </Field.Root>
                     </GridItem>
                     <GridItem>
-                        <Field.Root invalid>
+                        <Field.Root invalid={error?.birthDay}>
                             <CalendarInput
                                 name='birthDay'
                                 value={student.birthDay}
                                 onChange={handleChange}
                                 placeholder="Date of Birth"
                             />
-                            <Field.ErrorText>Date of Birth is required</Field.ErrorText>
+                            <Field.ErrorText>{error?.birthDay?.msg}</Field.ErrorText>
                         </Field.Root>
                     </GridItem>
                     <GridItem>
-                        <Field.Root invalid>
+                        <Field.Root invalid={error?.gender}>
                             <RadioGroup.Root
                                 name="gender"
                                 value={student.gender}
@@ -199,7 +245,9 @@ function NewStudentPage() {
                                         <RadioGroup.ItemIndicator />
                                         <RadioGroup.ItemText>Male</RadioGroup.ItemText>
                                     </RadioGroup.Item>
-                                    <Field.ErrorText>Gender is required</Field.ErrorText>
+                                    <Field.ErrorText>
+                                        {error?.gender?.msg}
+                                    </Field.ErrorText>
                                 </HStack>
                             </RadioGroup.Root>
                         </Field.Root>
@@ -271,7 +319,7 @@ function NewStudentPage() {
                         </Field.Root>
                     </GridItem>
                     <GridItem>
-                        <Field.Root>
+                        <Field.Root invalid={error?.nid}>
                             <Input
                                 name='nid'
                                 type="tel"
@@ -279,10 +327,11 @@ function NewStudentPage() {
                                 onChange={handleChange}
                                 placeholder="NID Number"
                             />
+                            <Field.ErrorText>{error?.nid?.msg}</Field.ErrorText>
                         </Field.Root>
                     </GridItem>
                     <GridItem>
-                        <Field.Root>
+                        <Field.Root invalid={error?.birthCertificate}>
                             <Input
                                 name='birthCertificate'
                                 type="tel"
@@ -290,10 +339,13 @@ function NewStudentPage() {
                                 onChange={handleChange}
                                 placeholder="Birth Certificate Number"
                             />
+                            <Field.ErrorText>
+                                {error?.birthCertificate?.msg}
+                            </Field.ErrorText>
                         </Field.Root>
                     </GridItem>
                     <GridItem>
-                        <Field.Root>
+                        <Field.Root invalid={error?.email}>
                             <Input
                                 name='email'
                                 type="email"
@@ -301,6 +353,9 @@ function NewStudentPage() {
                                 onChange={handleChange}
                                 placeholder="Student Email"
                             />
+                            <Field.ErrorText>
+                                {error?.email?.msg}
+                            </Field.ErrorText>
                         </Field.Root>
                     </GridItem>
                 </Grid>

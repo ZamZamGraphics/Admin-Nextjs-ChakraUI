@@ -9,11 +9,11 @@ function Logo() {
     const { colorMode } = useColorMode();
     const [mounted, setMounted] = useState(false);
 
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    useEffect(() => setMounted(true), []);
 
-    const logoSrc = !mounted ? logoDark : colorMode === "light" ? logoLight : logoDark;
+    if (!mounted) return null;
+
+    const logoSrc = colorMode === "light" ? logoLight : logoDark;
 
     return (
         <Image
@@ -27,7 +27,7 @@ function Logo() {
                 margin: "auto"
             }}
         />
-    )
+    );
 }
 
-export default Logo
+export default Logo;

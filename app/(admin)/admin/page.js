@@ -1,8 +1,6 @@
 import { Box, Button, HStack } from '@chakra-ui/react'
 import Link from 'next/link'
 
-export const revalidate = 0 // invalidate every time
-
 function page() {
     return (
         <Box>

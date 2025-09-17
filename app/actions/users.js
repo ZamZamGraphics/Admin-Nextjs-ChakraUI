@@ -1,5 +1,6 @@
 "use server"
 import { cookies } from "next/headers";
+import { revalidateTag } from "next/cache";
 
 export async function getAllUsers({ limit, page, search }) {
     try {
