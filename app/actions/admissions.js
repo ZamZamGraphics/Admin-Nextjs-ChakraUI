@@ -49,6 +49,25 @@ export async function getAdmission(id) {
     }
 }
 
+export async function getStdAdmission(batchNo, studentId) {
+    try {
+        const cookieStore = await cookies()
+        const token = cookieStore.get("token")?.value
+
+        const response = await fetch(`${process.env.API_URL}/v2/admission/${batchNo}/${studentId}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+        })
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        throw new Error('Internal Server Error');
+    }
+}
+
 export async function addAdmission(formData) {
     const cookieStore = await cookies()
     const token = cookieStore.get("token")?.value
@@ -66,6 +85,34 @@ export async function addAdmission(formData) {
         const data = await response.json();
         if (data?.admission) {
             revalidateTag('admissions')
+            return {
+                success: true,
+                ...data
+            }
+        }
+        return data;
+    } catch (error) {
+        throw new Error('Internal Server Error');
+    }
+}
+
+export async function addPayment(formData) {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
+
+    try {
+        const response = await fetch(`${process.env.API_URL}/v2/admission/payment`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+
+        const data = await response.json();
+        if (data?.admission) {
+            revalidateTag(['admissions', 'students'])
             return {
                 success: true,
                 ...data

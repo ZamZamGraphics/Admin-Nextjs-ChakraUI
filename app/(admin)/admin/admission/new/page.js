@@ -145,7 +145,6 @@ function NewAdmissionPage() {
                 course: courseName,
                 discount,
                 payment,
-                paymentType: "New",
                 nextPay: parseDate(nextPay) || "",
                 batch,
                 timeSchedule,
