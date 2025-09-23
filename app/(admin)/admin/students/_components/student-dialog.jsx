@@ -3,6 +3,7 @@ import Status from "@/components/admin/status"
 import dayjs from 'dayjs';
 
 function StudentDialog({ student }) {
+    const avatar = student?.avatar && `${process.env.API_URL}/upload/${student.avatar}`
     return (
         <Portal>
             <Dialog.Backdrop />
@@ -17,7 +18,7 @@ function StudentDialog({ student }) {
                         >
                             <Avatar.Root boxSize="100px" >
                                 <Avatar.Fallback fontSize="40px" name={student?.fullName} />
-                                <Avatar.Image src={`${process.env.API_URL}/upload/${student?.avatar}`} />
+                                <Avatar.Image src={avatar} />
                             </Avatar.Root>
                             <Text fontWeight="semibold" textStyle="2xl">
                                 {student?.fullName}

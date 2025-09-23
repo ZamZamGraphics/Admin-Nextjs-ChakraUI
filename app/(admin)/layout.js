@@ -1,8 +1,10 @@
 import AdminLayout from "@/components/admin/admin-layout"
+import { getAuthUser } from "../actions"
 
-function DashboardLayout({ children }) {
+async function DashboardLayout({ children }) {
+    const authUser = await getAuthUser()
     return (
-        <AdminLayout>
+        <AdminLayout user={authUser}>
             {children}
         </AdminLayout>
     )

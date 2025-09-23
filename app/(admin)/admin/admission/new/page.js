@@ -74,7 +74,7 @@ function NewAdmissionPage() {
 
         async function fetchCourses() {
             try {
-                const response = await getAllCourses(courseType)
+                const response = await getAllCourses({ search: courseType })
 
                 if (response?.courses) {
                     const cList = response.courses.map((c) => {
@@ -358,7 +358,7 @@ function NewAdmissionPage() {
                 <Flex my={5} gap={3} direction="column" align="center">
                     <Avatar.Root size="2xl">
                         <Avatar.Fallback name={student?.fullName} />
-                        <Avatar.Image src={`${process.env.NEXT_PUBLIC_API_URL}/upload/${student?.avatar}`} />
+                        <Avatar.Image src={student?.avatar && `${process.env.NEXT_PUBLIC_API_URL}/upload/${student.avatar}`} />
                     </Avatar.Root>
                 </Flex>
                 <Table.Root size="sm">

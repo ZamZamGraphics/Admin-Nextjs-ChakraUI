@@ -3,18 +3,26 @@ import { LuLogOut, LuSettings, LuUser } from "react-icons/lu"
 import Logout from "../logout"
 import Link from "next/link"
 
-export default function AvatarMenu() {
+export default function AvatarMenu({ user }) {
+    const avatar = user?.avatar && `${process.env.NEXT_PUBLIC_API_URL}/upload/${user.avatar}`;
     return (
         <Menu.Root>
             <Menu.Trigger rounded="full" focusRing="outside">
                 <Avatar.Root size="sm" cursor="pointer">
-                    <Avatar.Fallback name="Segun Adebayo" />
-                    <Avatar.Image src="https://bit.ly/sage-adebayo" />
+                    <Avatar.Fallback name={user.fullname} />
+                    <Avatar.Image src={avatar} />
                 </Avatar.Root>
             </Menu.Trigger>
             <Portal>
                 <Menu.Positioner>
                     <Menu.Content>
+                        <Menu.Item cursor="pointer">
+                            <Avatar.Root size="sm" cursor="pointer">
+                                <Avatar.Fallback name={user.fullname} />
+                                <Avatar.Image src={avatar} />
+                            </Avatar.Root>
+                            {user.fullname}
+                        </Menu.Item>
                         <Menu.Item
                             value="account"
                             cursor="pointer"

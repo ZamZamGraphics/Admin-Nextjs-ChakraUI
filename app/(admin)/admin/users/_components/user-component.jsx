@@ -9,7 +9,7 @@ async function UserComponent({ queryString }) {
 
     try {
         const response = await getAllUsers(queryString)
-        data = response?.data || {};
+        data = response?.users || {};
     } catch (err) {
         error = err;
     }
@@ -40,7 +40,7 @@ async function UserComponent({ queryString }) {
                         >
                             <Avatar.Root>
                                 <Avatar.Fallback name={user?.fullname} />
-                                <Avatar.Image src={`${process.env.API_URL}/upload/${user?.avatar}`} />
+                                <Avatar.Image src={user?.avatar && `${process.env.API_URL}/upload/${user.avatar}`} />
                             </Avatar.Root>
                             <Text fontWeight="semibold">
                                 {user?.fullname}

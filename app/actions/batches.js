@@ -2,120 +2,73 @@
 import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
 
-export async function getAllStudents({ limit, page, search, from, to } = {}) {
+export async function getAllBatches({ limit, page, search } = {}) {
     const cookieStore = await cookies()
     const token = cookieStore.get("token")?.value
 
     const query = [
         limit ? `limit=${limit}` : "",
         page ? `page=${page}` : "",
-        search ? `search=${search}` : "",
-        from ? `from=${from}` : "",
-        to ? `to=${to}` : "",
+        search ? `search=${search}` : ""
     ].filter(Boolean).join("&");
 
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/students${query ? "?" + query : ""}`, {
+        const response = await fetch(`${process.env.API_URL}/v2/batches${query ? "?" + query : ""}`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`
             },
             next: {
-                tags: ['students'],
+                tags: ['batches'],
             },
         })
 
         const data = await response.json();
-        return data
-    } catch (error) {
-        throw new Error('Internal Server Error');
-    }
-}
-
-export async function getStudent(id) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
-
-    try {
-        const response = await fetch(`${process.env.API_URL}/v2/students/${id}`, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            },
-            next: {
-                tags: ['student'],
-            },
-        })
-
-        const data = await response.json();
-        return data
-    } catch (error) {
-        throw new Error('Internal Server Error');
-    }
-}
-
-export async function getStudentByStudentId(studentId) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
-
-    try {
-        const response = await fetch(`${process.env.API_URL}/v2/students/verify/${studentId}`, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            },
-        })
-
-        const data = await response.json();
-        return data
-    } catch (error) {
-        throw new Error('Internal Server Error');
-    }
-}
-
-export async function addStudent(formData) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
-
-    try {
-        const response = await fetch(`${process.env.API_URL}/v2/students/register`, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            },
-            body: formData
-        })
-
-        const data = await response.json();
-        if (data?.student) {
-            revalidateTag('students')
-            return {
-                success: true,
-                ...data.student
-            }
-        }
         return data;
     } catch (error) {
         throw new Error('Internal Server Error');
     }
 }
 
-export async function updateStudent(id, formData) {
+export async function getBatch(id) {
     const cookieStore = await cookies()
     const token = cookieStore.get("token")?.value
 
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/students/${id}`, {
-            method: "PATCH",
+        const response = await fetch(`${process.env.API_URL}/v2/batches/${id}`, {
+            method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`
             },
-            body: formData
+            next: {
+                tags: ['batch'],
+            },
         })
 
         const data = await response.json();
-        if (data?.student) {
-            revalidateTag(['students', 'student'])
+        return data;
+    } catch (error) {
+        throw new Error('Internal Server Error');
+    }
+}
+
+export async function addBatch(formData) {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
+
+    try {
+        const response = await fetch(`${process.env.API_URL}/v2/batches/new`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+
+        const data = await response.json();
+        if (data?.batch) {
+            revalidateTag(['batches'])
             return {
                 success: true,
                 ...data
@@ -127,20 +80,49 @@ export async function updateStudent(id, formData) {
     }
 }
 
-export async function deleteStudent(id) {
+export async function updateBatch(id, formData) {
     const cookieStore = await cookies()
     const token = cookieStore.get("token")?.value
 
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/students/${id}`, {
-            method: "DELETE",
+        const response = await fetch(`${process.env.API_URL}/v2/batches/${id}`, {
+            method: "PATCH",
             headers: {
-                "Authorization": `Bearer ${token}`
-            }
+                "Authorization": `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
         })
 
         const data = await response.json();
-        revalidateTag(['students', 'student', 'admissions'])
+        if (data?.batch) {
+            revalidateTag(['batches', 'batch'])
+            return {
+                success: true,
+                ...data
+            }
+        }
+        return data;
+    } catch (error) {
+        throw new Error('Internal Server Error');
+    }
+}
+
+export async function deleteBatch(id) {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
+
+    try {
+        const response = await fetch(`${process.env.API_URL}/v2/batches/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        })
+
+        const data = await response.json();
+        revalidateTag(['batches', 'batch', 'students', 'admissions'])
         return data;
     } catch (error) {
         throw new Error('Internal Server Error');

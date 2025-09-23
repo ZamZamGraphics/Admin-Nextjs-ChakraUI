@@ -2,12 +2,21 @@
 import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
 
-export async function getAllAdmission({ limit, page, search }) {
-    try {
-        const cookieStore = await cookies()
-        const token = cookieStore.get("token")?.value
+export async function getAllAdmission({ limit, page, search, from, to } = {}) {
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
 
-        const response = await fetch(`${process.env.API_URL}/v2/admission?limit=${limit}&page=${page}&search=${search}`, {
+    const query = [
+        limit ? `limit=${limit}` : "",
+        page ? `page=${page}` : "",
+        search ? `search=${search}` : "",
+        from ? `from=${from}` : "",
+        to ? `to=${to}` : "",
+    ].filter(Boolean).join("&");
+
+    try {
+
+        const response = await fetch(`${process.env.API_URL}/v2/admission${query ? "?" + query : ""}`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -18,10 +27,7 @@ export async function getAllAdmission({ limit, page, search }) {
         })
 
         const data = await response.json();
-        return {
-            data: data[0]?.admission,
-            total: data[0]?.total[0]?.totalRecords
-        }
+        return data
     } catch (error) {
         throw new Error('Internal Server Error');
     }

@@ -9,7 +9,7 @@ async function StudentComponent({ queryString }) {
 
     try {
         const response = await getAllStudents(queryString)
-        data = response?.data || {};
+        data = response?.students || {};
     } catch (err) {
         error = err;
     }
@@ -42,7 +42,7 @@ async function StudentComponent({ queryString }) {
                                 <Flex align="center" gap={3} cursor="pointer">
                                     <Avatar.Root>
                                         <Avatar.Fallback name={std?.fullName} />
-                                        <Avatar.Image src={`${process.env.API_URL}/upload/${std?.avatar}`} />
+                                        <Avatar.Image src={std?.avatar && `${process.env.API_URL}/upload/${std.avatar}`} />
                                     </Avatar.Root>
                                     <Text fontWeight="semibold">
                                         {std?.fullName}

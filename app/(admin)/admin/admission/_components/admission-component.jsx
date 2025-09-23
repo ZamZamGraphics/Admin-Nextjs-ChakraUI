@@ -11,7 +11,7 @@ async function AdmissionComponent({ queryString }) {
 
     try {
         const response = await getAllAdmission(queryString)
-        data = response?.data || {};
+        data = response?.admission || {};
     } catch (err) {
         error = err;
     }
@@ -47,7 +47,7 @@ async function AdmissionComponent({ queryString }) {
                         >
                             <Avatar.Root>
                                 <Avatar.Fallback name={admission?.student?.fullName} />
-                                <Avatar.Image src={`${process.env.API_URL}/upload/${admission?.student?.avatar}`} />
+                                <Avatar.Image src={admission?.student?.avatar && `${process.env.API_URL}/upload/${admission?.student.avatar}`} />
                             </Avatar.Root>
                             <Text fontWeight="semibold">
                                 {admission?.student?.fullName}

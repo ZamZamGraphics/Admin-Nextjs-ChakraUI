@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { LuPlus } from 'react-icons/lu'
 import { ColorModeButton } from "@/components/ui/color-mode";
 
-function Header() {
+function Header({user}) {
     return (
         <Flex align="center" justify="space-between" gap="2">
             <Flex align="center" gap="3">
@@ -22,7 +22,7 @@ function Header() {
                 </Box>
                 <ColorModeButton />
             </Flex>
-            <AvatarMenu />
+            <AvatarMenu user={user} />
         </Flex>
     )
 }

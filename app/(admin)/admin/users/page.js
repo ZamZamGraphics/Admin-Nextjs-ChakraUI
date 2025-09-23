@@ -12,7 +12,7 @@ async function page(props) {
 
     const queryString = {
         page: Number(searchParams?.page) || 1,
-        limit: Number(searchParams?.limit) || 10,
+        limit: Number(searchParams?.limit) || 30,
         search: searchParams?.search || ""
     }
     try {

@@ -13,7 +13,7 @@ import {
 import { useState } from "react"
 import { LuMenu } from "react-icons/lu"
 
-function AdminLayout({ children }) {
+function AdminLayout({ children, user }) {
     const [open, setOpen] = useState(false)
 
     const sidebarWidth = "240px"
@@ -82,7 +82,7 @@ function AdminLayout({ children }) {
                             </Drawer.Trigger>
                         </Box>
                         <Box w="full">
-                            <Header />
+                            <Header user={user} />
                         </Box>
                     </Flex>
                     <Box
