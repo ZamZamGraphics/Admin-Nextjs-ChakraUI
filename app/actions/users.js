@@ -1,11 +1,12 @@
 "use server"
-import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
+import { auth } from "@/auth";
 
 export async function getAllUsers({ limit, page, search }) {
+    const session = await auth()
+    const token = session?.accessToken
+
     try {
-        const cookieStore = await cookies()
-        const token = cookieStore.get("token")?.value
 
         const response = await fetch(`${process.env.API_URL}/v2/users?limit=${limit}&page=${page}&search=${search}`, {
             method: "GET",
@@ -25,10 +26,10 @@ export async function getAllUsers({ limit, page, search }) {
 }
 
 export async function getUser(id) {
-    try {
-        const cookieStore = await cookies()
-        const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
+    try {
         const response = await fetch(`${process.env.API_URL}/v2/users/${id}`, {
             method: "GET",
             headers: {

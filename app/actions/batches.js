@@ -1,10 +1,10 @@
 "use server"
-import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
+import { auth } from "@/auth";
 
 export async function getAllBatches({ limit, page, search } = {}) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     const query = [
         limit ? `limit=${limit}` : "",
@@ -31,8 +31,8 @@ export async function getAllBatches({ limit, page, search } = {}) {
 }
 
 export async function getBatch(id) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     try {
         const response = await fetch(`${process.env.API_URL}/v2/batches/${id}`, {
@@ -53,8 +53,8 @@ export async function getBatch(id) {
 }
 
 export async function addBatch(formData) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     try {
         const response = await fetch(`${process.env.API_URL}/v2/batches/new`, {
@@ -81,8 +81,8 @@ export async function addBatch(formData) {
 }
 
 export async function updateBatch(id, formData) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     try {
         const response = await fetch(`${process.env.API_URL}/v2/batches/${id}`, {
@@ -109,8 +109,8 @@ export async function updateBatch(id, formData) {
 }
 
 export async function deleteBatch(id) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     try {
         const response = await fetch(`${process.env.API_URL}/v2/batches/${id}`, {

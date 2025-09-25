@@ -9,7 +9,7 @@ export default function AvatarMenu({ user }) {
         <Menu.Root>
             <Menu.Trigger rounded="full" focusRing="outside">
                 <Avatar.Root size="sm" cursor="pointer">
-                    <Avatar.Fallback name={user.fullname} />
+                    <Avatar.Fallback name={user?.fullname} />
                     <Avatar.Image src={avatar} />
                 </Avatar.Root>
             </Menu.Trigger>
@@ -18,10 +18,10 @@ export default function AvatarMenu({ user }) {
                     <Menu.Content>
                         <Menu.Item cursor="pointer">
                             <Avatar.Root size="sm" cursor="pointer">
-                                <Avatar.Fallback name={user.fullname} />
+                                <Avatar.Fallback name={user?.fullname} />
                                 <Avatar.Image src={avatar} />
                             </Avatar.Root>
-                            {user.fullname}
+                            {user?.fullname}
                         </Menu.Item>
                         <Menu.Item
                             value="account"

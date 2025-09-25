@@ -1,10 +1,10 @@
 "use server"
-import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
+import { auth } from "@/auth";
 
 export async function getAllCourses({ limit, page, search } = {}) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     const query = [
         limit ? `limit=${limit}` : "",
@@ -31,8 +31,8 @@ export async function getAllCourses({ limit, page, search } = {}) {
 }
 
 export async function getCourse(id) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     try {
         const response = await fetch(`${process.env.API_URL}/v2/courses/${id}`, {
@@ -53,8 +53,8 @@ export async function getCourse(id) {
 }
 
 export async function addCourse(formData) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     try {
         const response = await fetch(`${process.env.API_URL}/v2/courses/new`, {
@@ -81,8 +81,8 @@ export async function addCourse(formData) {
 }
 
 export async function updateCourse(id, formData) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     try {
         const response = await fetch(`${process.env.API_URL}/v2/courses/${id}`, {
@@ -109,8 +109,8 @@ export async function updateCourse(id, formData) {
 }
 
 export async function deleteCourse(id) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     try {
         const response = await fetch(`${process.env.API_URL}/v2/courses/${id}`, {

@@ -1,10 +1,12 @@
+import { auth, signOut } from "@/auth"
 import { NextResponse } from "next/server"
 import { jwtVerify } from 'jose';
 
-export async function middleware(req) {
+export default auth(async (req) => {
     const { pathname } = req.nextUrl
 
-    const token = req.cookies.get("token")?.value
+    const session = req.auth // NextAuth session
+    const token = session?.accessToken || null
 
     if (pathname === "/") {
         return NextResponse.redirect(new URL("/admin", req.url))
@@ -23,8 +25,7 @@ export async function middleware(req) {
             const secret = new TextEncoder().encode(process.env.JWT_SECRET);
             await jwtVerify(token, secret);
         } catch (error) {
-            const res = NextResponse.redirect(new URL("/login", req.url))
-            res.cookies.delete("token")
+            const res = await signOut({ redirect: true, callbackUrl: "/login" })
             return res
         }
     }
@@ -36,7 +37,7 @@ export async function middleware(req) {
     }
 
     return NextResponse.next()
-}
+})
 
 
 export const config = {

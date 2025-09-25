@@ -1,10 +1,10 @@
 "use server"
-import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
+import { auth } from "@/auth";
 
 export async function getAllStudents({ limit, page, search, from, to } = {}) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     const query = [
         limit ? `limit=${limit}` : "",
@@ -33,8 +33,8 @@ export async function getAllStudents({ limit, page, search, from, to } = {}) {
 }
 
 export async function getStudent(id) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     try {
         const response = await fetch(`${process.env.API_URL}/v2/students/${id}`, {
@@ -55,8 +55,8 @@ export async function getStudent(id) {
 }
 
 export async function getStudentByStudentId(studentId) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     try {
         const response = await fetch(`${process.env.API_URL}/v2/students/verify/${studentId}`, {
@@ -74,8 +74,8 @@ export async function getStudentByStudentId(studentId) {
 }
 
 export async function addStudent(formData) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     try {
         const response = await fetch(`${process.env.API_URL}/v2/students/register`, {
@@ -101,8 +101,8 @@ export async function addStudent(formData) {
 }
 
 export async function updateStudent(id, formData) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     try {
         const response = await fetch(`${process.env.API_URL}/v2/students/${id}`, {
@@ -128,8 +128,8 @@ export async function updateStudent(id, formData) {
 }
 
 export async function deleteStudent(id) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     try {
         const response = await fetch(`${process.env.API_URL}/v2/students/${id}`, {

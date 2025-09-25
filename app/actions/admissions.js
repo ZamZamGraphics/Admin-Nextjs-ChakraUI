@@ -1,10 +1,10 @@
 "use server"
-import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
+import { auth } from "@/auth";
 
 export async function getAllAdmission({ limit, page, search, from, to } = {}) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     const query = [
         limit ? `limit=${limit}` : "",
@@ -34,10 +34,10 @@ export async function getAllAdmission({ limit, page, search, from, to } = {}) {
 }
 
 export async function getAdmission(id) {
-    try {
-        const cookieStore = await cookies()
-        const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
+    try {
         const response = await fetch(`${process.env.API_URL}/v2/admission/${id}`, {
             method: "GET",
             headers: {
@@ -56,10 +56,10 @@ export async function getAdmission(id) {
 }
 
 export async function getStdAdmission(batchNo, studentId) {
-    try {
-        const cookieStore = await cookies()
-        const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
+    try {
         const response = await fetch(`${process.env.API_URL}/v2/admission/${batchNo}/${studentId}`, {
             method: "GET",
             headers: {
@@ -75,8 +75,8 @@ export async function getStdAdmission(batchNo, studentId) {
 }
 
 export async function addAdmission(formData) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     try {
         const response = await fetch(`${process.env.API_URL}/v2/admission/new`, {
@@ -103,8 +103,8 @@ export async function addAdmission(formData) {
 }
 
 export async function addPayment(formData) {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const session = await auth()
+    const token = session?.accessToken
 
     try {
         const response = await fetch(`${process.env.API_URL}/v2/admission/payment`, {

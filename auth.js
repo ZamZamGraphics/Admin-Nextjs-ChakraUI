@@ -1,0 +1,31 @@
+import NextAuth from "next-auth"
+import Credentials from "next-auth/providers/credentials"
+
+export const { auth, handlers, signIn, signOut } = NextAuth({
+    providers: [
+        Credentials({
+            name: "Credentials",
+            credentials: {},
+            async authorize(credentials) {
+                if (!credentials?.accessToken) return null;
+                return { accessToken: credentials.accessToken };
+            },
+        }),
+    ],
+    session: {
+        strategy: "jwt",
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+    },
+    secret: process.env.AUTH_SECRET,
+    trustHost: true,
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user?.accessToken) token.accessToken = user.accessToken;
+            return token
+        },
+        async session({ session, token }) {
+            if (token?.accessToken) session.accessToken = token.accessToken;
+            return session
+        },
+    },
+})

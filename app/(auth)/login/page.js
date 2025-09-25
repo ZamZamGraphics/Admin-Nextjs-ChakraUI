@@ -6,16 +6,14 @@ import { LuUser } from 'react-icons/lu'
 import { PasswordInput } from '@/components/ui/password-input'
 import { useState } from 'react'
 import { ceredntialLogin } from '@/app/actions'
+import { signIn } from "next-auth/react"
 import { useFormStatus } from 'react-dom'
-import { useRouter } from 'next/navigation'
 
 function LoginPage() {
     const { pending } = useFormStatus();
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState({})
-
-    const router = useRouter();
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -25,7 +23,11 @@ function LoginPage() {
             const response = await ceredntialLogin(formData);
 
             if (response?.success) {
-                router.push("/admin")
+                await signIn("credentials", {
+                    accessToken: response.token,
+                    redirect: true,
+                    callbackUrl: "/admin"
+                })
             }
             if (response?.errors) {
                 setError({ ...response?.errors });
