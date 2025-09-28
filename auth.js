@@ -8,7 +8,11 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             credentials: {},
             async authorize(credentials) {
                 if (!credentials?.accessToken) return null;
-                return { accessToken: credentials.accessToken };
+                const userInfo = JSON.parse(credentials.userInfo)
+                return {
+                    userInfo,
+                    accessToken: credentials.accessToken
+                };
             },
         }),
     ],
@@ -20,11 +24,17 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     trustHost: true,
     callbacks: {
         async jwt({ token, user }) {
-            if (user?.accessToken) token.accessToken = user.accessToken;
+            if (user?.accessToken) {
+                token.user = user.userInfo;
+                token.accessToken = user.accessToken;
+            }
             return token
         },
         async session({ session, token }) {
-            if (token?.accessToken) session.accessToken = token.accessToken;
+            if (token?.accessToken) {
+                session.accessToken = token.accessToken;
+                session.user = token.user;
+            }
             return session
         },
     },

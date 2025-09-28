@@ -1,10 +1,10 @@
+import { ColorModeButton } from "@/components/ui/color-mode";
 import { Box, Button, Flex, Icon } from '@chakra-ui/react'
+import { LuPlus } from 'react-icons/lu'
 import AvatarMenu from './header-menu'
 import Link from 'next/link'
-import { LuPlus } from 'react-icons/lu'
-import { ColorModeButton } from "@/components/ui/color-mode";
 
-function Header({user}) {
+function Header() {
     return (
         <Flex align="center" justify="space-between" gap="2">
             <Flex align="center" gap="3">
@@ -22,7 +22,7 @@ function Header({user}) {
                 </Box>
                 <ColorModeButton />
             </Flex>
-            <AvatarMenu user={user} />
+            <AvatarMenu />
         </Flex>
     )
 }

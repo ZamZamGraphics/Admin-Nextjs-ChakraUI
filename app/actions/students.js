@@ -115,7 +115,8 @@ export async function updateStudent(id, formData) {
 
         const data = await response.json();
         if (data?.student) {
-            revalidateTag(['students', 'student'])
+            revalidateTag('students')
+            revalidateTag('student')
             return {
                 success: true,
                 ...data
@@ -140,7 +141,8 @@ export async function deleteStudent(id) {
         })
 
         const data = await response.json();
-        revalidateTag(['students', 'student', 'admissions'])
+        revalidateTag('students')
+        revalidateTag('admissions')
         return data;
     } catch (error) {
         throw new Error('Internal Server Error');

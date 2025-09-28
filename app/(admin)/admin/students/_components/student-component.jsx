@@ -1,14 +1,14 @@
 import { Alert, Flex, Table, Text, Avatar, Dialog } from "@chakra-ui/react";
+import { serverFetch } from "@/utils";
 import Status from "@/components/admin/status";
-import Action from "./action";
-import { getAllStudents } from "@/app/actions/students";
 import StudentDialog from "./student-dialog";
+import Action from "./action";
 
 async function StudentComponent({ queryString }) {
     let data, error;
 
     try {
-        const response = await getAllStudents(queryString)
+        const response = await serverFetch('students', queryString)
         data = response?.students || {};
     } catch (err) {
         error = err;

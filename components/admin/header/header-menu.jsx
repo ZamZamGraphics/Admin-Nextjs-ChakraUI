@@ -1,9 +1,12 @@
+import { useSession, signOut } from "next-auth/react"
 import { Avatar, Icon, Menu, Portal } from "@chakra-ui/react"
 import { LuLogOut, LuSettings, LuUser } from "react-icons/lu"
-import Logout from "../logout"
 import Link from "next/link"
 
-export default function AvatarMenu({ user }) {
+export default function AvatarMenu() {
+    const { data: session } = useSession()
+    const user = session?.user;
+
     const avatar = user?.avatar && `${process.env.NEXT_PUBLIC_API_URL}/upload/${user.avatar}`;
     return (
         <Menu.Root>
@@ -23,6 +26,7 @@ export default function AvatarMenu({ user }) {
                             </Avatar.Root>
                             {user?.fullname}
                         </Menu.Item>
+                        <Menu.Separator />
                         <Menu.Item
                             value="account"
                             cursor="pointer"
@@ -39,9 +43,13 @@ export default function AvatarMenu({ user }) {
                             <Icon><LuSettings /></Icon>
                             Settings
                         </Menu.Item>
-                        <Menu.Item value="logout" cursor="pointer">
+                        <Menu.Item
+                            value="logout"
+                            cursor="pointer"
+                            onClick={() => signOut()}
+                        >
                             <Icon><LuLogOut /></Icon>
-                            <Logout />
+                            Logout
                         </Menu.Item>
                     </Menu.Content>
                 </Menu.Positioner>

@@ -2,21 +2,24 @@ import { Suspense } from "react";
 import { Box, Flex, Table, Text } from "@chakra-ui/react";
 import Search from "@/components/admin/search";
 import Pagination from "@/components/admin/pagination";
-import { getAllAdmission } from "@/app/actions/admissions";
 import LoadingAdmission from "./_components/admission-loading";
 import AdmissionComponent from "./_components/admission-component";
+import { serverFetch } from "@/utils";
 
 async function page(props) {
-    let totalData;
-    const searchParams = await props.searchParams;
+    let totalData
+    const searchParams = await props.searchParams
 
     const queryString = {
         page: Number(searchParams?.page) || 1,
         limit: Number(searchParams?.limit) || 30,
-        search: searchParams?.search || ""
+        search: searchParams?.search || "",
+        from: searchParams?.from || "",
+        to: searchParams?.to || ""
     }
+
     try {
-        const response = await getAllAdmission(queryString)
+        const response = await serverFetch('admission', queryString)
         totalData = response?.total || 0;
     } catch (err) {
         console.error(err);
@@ -67,7 +70,7 @@ async function page(props) {
                 </Table.Root>
             </Table.ScrollArea>
             <Pagination
-                queryString={queryString}
+                limit={queryString.limit}
                 totalData={totalData}
             />
         </Box>

@@ -1,8 +1,8 @@
 import { Suspense } from "react"
+import { serverFetch } from "@/utils";
 import Search from "@/components/admin/search"
 import Pagination from "@/components/admin/pagination"
 import { Flex, Grid, GridItem, Table, Text } from "@chakra-ui/react"
-import { getAllCourses } from "@/app/actions/courses";
 import CoursesComponent from "./_components/courses-component";
 import LoadingCourses from "./_components/courses-loading";
 import CourseEdit from "./_components/course-edit";
@@ -18,7 +18,7 @@ async function page(props) {
         search: searchParams?.search || ""
     }
     try {
-        const response = await getAllCourses(queryString)
+        const response = await serverFetch('courses', queryString)
         totalData = response?.total || 0;
     } catch (err) {
         console.error(err);
@@ -70,7 +70,7 @@ async function page(props) {
                     </Table.Root>
                 </Table.ScrollArea>
                 <Pagination
-                    queryString={queryString}
+                    limit={queryString.limit}
                     totalData={totalData}
                 />
             </GridItem>

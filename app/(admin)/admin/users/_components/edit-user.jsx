@@ -4,21 +4,22 @@ import { useState } from "react"
 import { useFormStatus } from "react-dom";
 import { Alert, Avatar, Box, Button, createListCollection, Field, Flex, Grid, GridItem, Input, Portal, Select, Text } from "@chakra-ui/react"
 import { PasswordInput } from "@/components/ui/password-input";
-import { addUser } from "@/app/actions/users";
+import { updateUser } from "@/app/actions/users";
 
-function NewUserPage() {
+function EditUser({ userInfo }) {
     const { pending } = useFormStatus();
-    const [avatar, setAvatar] = useState(null);
-    const [avatarImage, setAvatarImage] = useState("");
-    const [error, setError] = useState("")
+    const avatarURL = userInfo?.avatar && `${process.env.NEXT_PUBLIC_API_URL}/upload/${userInfo?.avatar}`;
+    const [avatar, setAvatar] = useState(userInfo?.avatar);
+    const [avatarImage, setAvatarImage] = useState(avatarURL);
     const [success, setSuccess] = useState("")
+    const [error, setError] = useState("")
 
     const [user, setUser] = useState({
-        fullname: "",
-        username: "",
-        email: "",
+        fullname: userInfo?.fullname,
+        email: userInfo?.email,
         password: "",
-        role: "",
+        role: [userInfo?.role],
+        status: userInfo?.status,
     })
 
     const handleChange = (e) => {
@@ -40,21 +41,21 @@ function NewUserPage() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         setError("")
+        setSuccess("")
         try {
             const formData = new FormData();
 
             if (avatar) formData.append("avatar", avatar);
 
-            Object.entries(user).forEach(([key, value]) => {
-                if (key === "role" && Array.isArray(value)) {
-                    formData.append(key, value[0]);
-                } else {
-                    formData.append(key, value);
-                }
-            });
-            formData.append("status", "Unverified");
+            formData.append("fullname", user.fullname);
+            formData.append("email", user.email);
+            formData.append("status", user.status);
+            formData.append("role", user.role[0]);
+            if (user.password) {
+                formData.append("password", user.password);
+            }
 
-            const response = await addUser(formData);
+            const response = await updateUser(userInfo?._id, formData);
 
             if (response?.success) {
                 setSuccess({ message: response?.message });
@@ -99,7 +100,7 @@ function NewUserPage() {
                         </Avatar.Root>
                     </label>
                     {success?.message &&
-                        <Alert.Root status="warning">
+                        <Alert.Root status="success">
                             <Alert.Indicator />
                             <Alert.Title>{success?.message}</Alert.Title>
                         </Alert.Root>
@@ -125,16 +126,11 @@ function NewUserPage() {
                         </Field.Root>
                     </GridItem>
                     <GridItem>
-                        <Field.Root invalid={error?.username}>
+                        <Field.Root>
                             <Input
-                                name='username'
-                                value={user.username}
-                                onChange={handleChange}
-                                placeholder="Username"
+                                defaultValue={userInfo?.username}
+                                disabled
                             />
-                            <Field.ErrorText>
-                                {error?.username?.msg}
-                            </Field.ErrorText>
                         </Field.Root>
                     </GridItem>
                     <GridItem>
@@ -207,13 +203,13 @@ function NewUserPage() {
                     type='submit'
                     colorPalette="gray"
                     loading={pending}
-                >Add New User</Button>
+                >Update User</Button>
             </form>
         </Box>
     )
 }
 
-export default NewUserPage
+export default EditUser
 
 const userRole = createListCollection({
     items: [
@@ -221,3 +217,4 @@ const userRole = createListCollection({
         { value: "User", label: "User" },
     ]
 });
+

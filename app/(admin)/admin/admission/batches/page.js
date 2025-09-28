@@ -2,11 +2,11 @@ import { Suspense } from "react"
 import Search from "@/components/admin/search"
 import Pagination from "@/components/admin/pagination"
 import { Flex, Grid, GridItem, Table, Text } from "@chakra-ui/react"
-import { getAllBatches } from "@/app/actions/batches";
 import LoadingBatches from "./_components/batches-loading";
 import BatchesComponent from "./_components/batches-component";
 import BatchEdit from "./_components/batch-edit";
 import NewBatch from "./_components/new-batch";
+import { serverFetch } from "@/utils";
 
 async function page(props) {
     let totalData;
@@ -15,10 +15,12 @@ async function page(props) {
     const queryString = {
         page: Number(searchParams?.page) || 1,
         limit: Number(searchParams?.limit) || 10,
-        search: searchParams?.search || ""
+        search: searchParams?.search || "",
+        from: searchParams?.from || "",
+        to: searchParams?.to || ""
     }
     try {
-        const response = await getAllBatches(queryString)
+        const response = await serverFetch('batches', queryString)
         totalData = response?.total || 0;
     } catch (err) {
         console.error(err);
@@ -72,7 +74,7 @@ async function page(props) {
                     </Table.Root>
                 </Table.ScrollArea>
                 <Pagination
-                    queryString={queryString}
+                    limit={queryString.limit}
                     totalData={totalData}
                 />
             </GridItem>

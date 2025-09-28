@@ -1,14 +1,15 @@
-import { Alert, Flex, Table, Text, Avatar } from "@chakra-ui/react";
+import { Alert, Flex, Table, Text, Avatar, Dialog } from "@chakra-ui/react";
+import { serverFetch } from "@/utils";
 import Status from "@/components/admin/status";
-import { getAllUsers } from "@/app/actions/users";
 import Action from "./action";
 import Link from "next/link";
+import UserDialog from "./user-dialog";
 
 async function UserComponent({ queryString }) {
     let data, error;
 
     try {
-        const response = await getAllUsers(queryString)
+        const response = await serverFetch('users', queryString)
         data = response?.users || {};
     } catch (err) {
         error = err;
@@ -32,20 +33,20 @@ async function UserComponent({ queryString }) {
             {data?.length > 0 ? data.map((user) => (
                 <Table.Row key={user._id}>
                     <Table.Cell>
-                        <Flex
-                            align="center"
-                            gap={3}
-                            as={Link}
-                            href={`/admin/users/${user?._id}`}
-                        >
-                            <Avatar.Root>
-                                <Avatar.Fallback name={user?.fullname} />
-                                <Avatar.Image src={user?.avatar && `${process.env.API_URL}/upload/${user.avatar}`} />
-                            </Avatar.Root>
-                            <Text fontWeight="semibold">
-                                {user?.fullname}
-                            </Text>
-                        </Flex>
+                        <Dialog.Root size={{ mdDown: "full", md: "lg" }} scrollBehavior="outside">
+                            <Dialog.Trigger asChild>
+                                <Flex align="center" gap={3} cursor="pointer">
+                                    <Avatar.Root>
+                                        <Avatar.Fallback name={user?.fullname} />
+                                        <Avatar.Image src={user?.avatar && `${process.env.API_URL}/upload/${user.avatar}`} />
+                                    </Avatar.Root>
+                                    <Text fontWeight="semibold">
+                                        {user?.fullname}
+                                    </Text>
+                                </Flex>
+                            </Dialog.Trigger>
+                            <UserDialog user={user} />
+                        </Dialog.Root>
                     </Table.Cell>
                     <Table.Cell>{user?.username}</Table.Cell>
                     <Table.Cell>{user?.email}</Table.Cell>

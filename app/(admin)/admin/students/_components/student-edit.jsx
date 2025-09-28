@@ -62,7 +62,8 @@ function EditStudent({ std }) {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        setError("");
+        setError("")
+        setSuccess("")
         try {
             const formData = new FormData();
 

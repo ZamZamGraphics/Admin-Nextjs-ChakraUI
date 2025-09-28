@@ -91,6 +91,7 @@ export async function addAdmission(formData) {
         const data = await response.json();
         if (data?.admission) {
             revalidateTag('admissions')
+            revalidateTag('students')
             return {
                 success: true,
                 ...data
@@ -118,7 +119,8 @@ export async function addPayment(formData) {
 
         const data = await response.json();
         if (data?.admission) {
-            revalidateTag(['admissions', 'students'])
+            revalidateTag('admissions')
+            revalidateTag('students')
             return {
                 success: true,
                 ...data

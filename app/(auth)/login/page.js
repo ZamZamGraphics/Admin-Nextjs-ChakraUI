@@ -24,6 +24,7 @@ function LoginPage() {
 
             if (response?.success) {
                 await signIn("credentials", {
+                    userInfo: JSON.stringify(response.user),
                     accessToken: response.token,
                     redirect: true,
                     callbackUrl: "/admin"

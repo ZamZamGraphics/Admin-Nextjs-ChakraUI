@@ -8,12 +8,11 @@ import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-function Pagination({ queryString, totalData }) {
+function Pagination({ limit, totalData }) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    const { limit } = queryString;
     const totalPages = Math.ceil(totalData / limit);
 
     // Default page = 1

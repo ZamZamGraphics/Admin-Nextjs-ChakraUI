@@ -1,12 +1,12 @@
 import { Alert, Table } from "@chakra-ui/react";
-import { getAllCourses } from "@/app/actions/courses";
+import { serverFetch } from "@/utils";
 import Action from "./action";
 
 async function CoursesComponent({ queryString }) {
     let data, error;
 
     try {
-        const response = await getAllCourses(queryString)
+        const response = await serverFetch('courses', queryString)
         data = response?.courses || {};
     } catch (err) {
         error = err;

@@ -1,15 +1,15 @@
 import { Alert, Table, Text } from "@chakra-ui/react";
-import { getAllBatches } from "@/app/actions/batches";
+import { serverFetch } from "@/utils";
 import Action from "./action";
 import dayjs from "dayjs";
-import isBetween from "dayjs/plugin/isBetween";
 dayjs.extend(isBetween);
+import isBetween from "dayjs/plugin/isBetween";
 
 async function BatchesComponent({ queryString }) {
     let data, error;
 
     try {
-        const response = await getAllBatches(queryString)
+        const response = await serverFetch('batches', queryString)
         data = response?.batches || {};
     } catch (err) {
         error = err;

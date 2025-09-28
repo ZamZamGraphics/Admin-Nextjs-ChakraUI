@@ -1,8 +1,8 @@
 import { Suspense } from "react";
+import { serverFetch } from "@/utils";
 import { Box, Flex, Table, Text } from "@chakra-ui/react";
 import Search from "@/components/admin/search";
 import Pagination from "@/components/admin/pagination";
-import { getAllUsers } from "@/app/actions/users"
 import UserLoading from "./_components/user-loading";
 import UserComponent from "./_components/user-component";
 
@@ -16,7 +16,7 @@ async function page(props) {
         search: searchParams?.search || ""
     }
     try {
-        const response = await getAllUsers(queryString)
+        const response = await serverFetch('users', queryString)
         totalData = response?.total || 0;
     } catch (err) {
         console.error(err);
@@ -61,7 +61,7 @@ async function page(props) {
                 </Table.Root>
             </Table.ScrollArea>
             <Pagination
-                queryString={queryString}
+                limit={queryString.limit}
                 totalData={totalData}
             />
         </Box>

@@ -1,16 +1,16 @@
-import Link from "next/link";
 import { Alert, Flex, Table, Text, Avatar } from "@chakra-ui/react";
-import { getAllAdmission } from "@/app/actions/admissions"
-import dayjs from 'dayjs';
-import Action from "./action";
+import { serverFetch } from "@/utils";
 import Status from "@/components/admin/status";
 import AdmissionDue from "./admission-due";
+import Action from "./action";
+import Link from "next/link";
+import dayjs from 'dayjs';
 
 async function AdmissionComponent({ queryString }) {
     let data, error;
 
     try {
-        const response = await getAllAdmission(queryString)
+        const response = await serverFetch('admission', queryString)
         data = response?.admission || {};
     } catch (err) {
         error = err;

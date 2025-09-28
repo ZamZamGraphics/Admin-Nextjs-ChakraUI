@@ -68,7 +68,7 @@ export async function addBatch(formData) {
 
         const data = await response.json();
         if (data?.batch) {
-            revalidateTag(['batches'])
+            revalidateTag('batches')
             return {
                 success: true,
                 ...data
@@ -96,7 +96,8 @@ export async function updateBatch(id, formData) {
 
         const data = await response.json();
         if (data?.batch) {
-            revalidateTag(['batches', 'batch'])
+            revalidateTag('batches')
+            revalidateTag('batch')
             return {
                 success: true,
                 ...data
@@ -122,7 +123,9 @@ export async function deleteBatch(id) {
         })
 
         const data = await response.json();
-        revalidateTag(['batches', 'batch', 'students', 'admissions'])
+        revalidateTag('batches')
+        revalidateTag('students')
+        revalidateTag('admissions')
         return data;
     } catch (error) {
         throw new Error('Internal Server Error');

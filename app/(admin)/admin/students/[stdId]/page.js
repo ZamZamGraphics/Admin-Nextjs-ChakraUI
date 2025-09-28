@@ -1,12 +1,12 @@
-import { getStudent } from "@/app/actions/students";
-import { Alert } from "@chakra-ui/react";
-import EditStudent from "../_components/student-edit";
 import { Suspense } from "react";
+import { Alert } from "@chakra-ui/react";
+import { serverFetchById } from "@/utils";
+import EditStudent from "../_components/student-edit";
 
 async function page({ params }) {
     const { stdId } = await params;
     try {
-        const student = await getStudent(stdId)
+        const student = await serverFetchById('students', stdId)
         return (
             <Suspense fallback="Loading Edit Student...">
                 <EditStudent std={student} />

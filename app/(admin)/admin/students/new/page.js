@@ -61,6 +61,7 @@ function NewStudentPage() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        setError("")
         try {
             const formData = new FormData();
 

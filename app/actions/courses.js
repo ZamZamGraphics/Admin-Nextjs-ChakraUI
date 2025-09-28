@@ -68,7 +68,7 @@ export async function addCourse(formData) {
 
         const data = await response.json();
         if (data?.course) {
-            revalidateTag(['courses'])
+            revalidateTag('courses')
             return {
                 success: true,
                 ...data
@@ -96,7 +96,8 @@ export async function updateCourse(id, formData) {
 
         const data = await response.json();
         if (data?.course) {
-            revalidateTag(['courses', 'course'])
+            revalidateTag('courses')
+            revalidateTag('course')
             return {
                 success: true,
                 ...data
@@ -122,7 +123,7 @@ export async function deleteCourse(id) {
         })
 
         const data = await response.json();
-        revalidateTag(['courses', 'course'])
+        revalidateTag('courses')
         return data;
     } catch (error) {
         throw new Error('Internal Server Error');
