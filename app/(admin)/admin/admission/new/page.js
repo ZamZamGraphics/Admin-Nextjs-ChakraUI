@@ -1,7 +1,5 @@
 "use client"
 
-import { getAllCourses, getCourse } from "@/app/actions/courses";
-import { getStudentByStudentId } from "@/app/actions/students";
 import CalendarInput from "@/components/admin/calendar-input";
 import useDebounce from "@/hooks/useDebounce";
 import { Alert, Avatar, Box, Field, Input, Flex, Text, Select, Portal, Button, createListCollection, Table } from "@chakra-ui/react";
@@ -45,7 +43,10 @@ function NewAdmissionPage() {
         if (debounce) {
             async function fetchStudent() {
                 try {
-                    const response = await getStudentByStudentId(studentId)
+                    const res = await fetch(`/api/students/verify/${studentId}`, {
+                        credentials: "include",
+                    })
+                    const response = await res.json()
                     if (response) {
                         setStudent({
                             avatar: response.avatar,
@@ -74,7 +75,10 @@ function NewAdmissionPage() {
 
         async function fetchCourses() {
             try {
-                const response = await getAllCourses({ search: courseType })
+                const res = await fetch(`/api/courses?search=${courseType}`, {
+                    credentials: "include",
+                })
+                const response = await res.json()
 
                 if (response?.courses) {
                     const cList = response.courses.map((c) => {
@@ -102,7 +106,10 @@ function NewAdmissionPage() {
 
         async function fetchCourse() {
             try {
-                const response = await getCourse(courseName)
+                const res = await fetch(`/api/courses/${courseName}`, {
+                    credentials: "include",
+                })
+                const response = await res.json()
                 setCourse(response);
             } catch (e) {
                 setError({ message: e.message });

@@ -79,7 +79,7 @@ function EditUser({ userInfo }) {
             rounded="2xl"
             shadow="sm"
         >
-            <Text textStyle="2xl" fontWeight="semibold">New User</Text>
+            <Text textStyle="2xl" fontWeight="semibold">Edit User</Text>
             <form onSubmit={handleSubmit}>
                 <Flex my={5} gap={3} direction="column" align="center">
                     <Input

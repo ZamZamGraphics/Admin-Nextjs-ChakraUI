@@ -7,11 +7,16 @@ function Status({ status }) {
         Unverified: "orange",
         Resigned: "orange",
         Unpaid: "orange",
+        Intern: "orange",
+        Resigned: "orange",
 
         Verified: "green",
         Approved: "green",
         Advanced: "green",
-        Paid: "green",
+        "Full Paid": "green",
+        "Full Time": "green",
+        "Part Time": "green",
+        "Fixed Term": "green",
 
         Canceled: "red",
         Terminated: "red",

@@ -4,31 +4,34 @@ import { useState } from "react"
 import { useFormStatus } from "react-dom";
 import CalendarInput from "@/components/admin/calendar-input";
 import { Alert, Avatar, Box, Button, createListCollection, Field, Flex, Grid, GridItem, HStack, Input, Portal, RadioGroup, Select, Text } from "@chakra-ui/react"
-import { addEmployee } from "@/app/actions/employee";
+import { addEmployee, updateEmployee } from "@/app/actions/employee";
 import { parseDate } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import dayjs from "dayjs";
 
-function NewEmployeePage() {
+function EditEmployee({ employeeInfo }) {
     const { pending } = useFormStatus();
-    const [avatar, setAvatar] = useState(null);
-    const [avatarImage, setAvatarImage] = useState("");
+    const avatarURL = employeeInfo?.avatar && `${process.env.NEXT_PUBLIC_API_URL}/upload/${employeeInfo?.avatar}`;
+    const [avatar, setAvatar] = useState(employeeInfo?.avatar);
+    const [avatarImage, setAvatarImage] = useState(avatarURL);
+    const [success, setSuccess] = useState("")
     const [error, setError] = useState("")
 
     const [employee, setEmployee] = useState({
-        fullName: "",
-        fathersName: "",
-        mothersName: "",
-        address: "",
-        birthDay: "",
-        gender: "",
-        phonePrimary: "",
-        phoneSecondary: "",
-        email: "",
-        nid: "",
-        designation: "",
-        bloodGroup: "",
-        education: "",
-        status: "",
+        fullName: employeeInfo?.fullName,
+        fathersName: employeeInfo?.fathersName,
+        mothersName: employeeInfo?.mothersName,
+        address: employeeInfo?.address,
+        birthDay: dayjs(employeeInfo?.birthDay).format("DD-MM-YYYY"),
+        gender: employeeInfo?.gender,
+        phonePrimary: employeeInfo?.phone[0],
+        phoneSecondary: employeeInfo?.phone[1],
+        email: employeeInfo?.email,
+        nid: employeeInfo?.nid,
+        designation: employeeInfo?.designation,
+        bloodGroup: [employeeInfo?.bloodGroup],
+        education: employeeInfo?.education,
+        status: [employeeInfo?.status],
     })
 
     const router = useRouter()
@@ -51,7 +54,9 @@ function NewEmployeePage() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        setSuccess("")
         setError("")
+
         try {
             const formData = new FormData();
 
@@ -70,9 +75,9 @@ function NewEmployeePage() {
                 }
             });
 
-            const response = await addEmployee(formData);
+            const response = await updateEmployee(employeeInfo?._id, formData);
 
-            if (response?.success) router.push(`/admin/employee`)
+            if (response?.success) setSuccess({ message: response?.message })
             if (response?.errors) setError({ ...response?.errors })
 
         } catch (e) {
@@ -90,7 +95,7 @@ function NewEmployeePage() {
             rounded="2xl"
             shadow="sm"
         >
-            <Text textStyle="2xl" fontWeight="semibold">New Employee</Text>
+            <Text textStyle="2xl" fontWeight="semibold">Edit Employee</Text>
             <form onSubmit={handleSubmit}>
                 <Flex my={5} gap={3} direction="column" align="center">
                     <Input
@@ -110,6 +115,12 @@ function NewEmployeePage() {
                             <Avatar.Image src={avatarImage || null} />
                         </Avatar.Root>
                     </label>
+                    {success?.message &&
+                        <Alert.Root status="success">
+                            <Alert.Indicator />
+                            <Alert.Title>{success?.message}</Alert.Title>
+                        </Alert.Root>
+                    }
                     {error?.message &&
                         <Alert.Root status="error">
                             <Alert.Indicator />
@@ -361,7 +372,7 @@ function NewEmployeePage() {
     )
 }
 
-export default NewEmployeePage
+export default EditEmployee
 
 const bloodGroup = createListCollection({
     items: [

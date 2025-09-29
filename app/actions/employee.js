@@ -2,26 +2,25 @@
 import { revalidateTag } from "next/cache";
 import { auth } from "@/auth";
 
-export async function addBatch(formData) {
+export async function addEmployee(formData) {
     const session = await auth()
     const token = session?.accessToken
 
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/batches/new`, {
+        const response = await fetch(`${process.env.API_URL}/v2/employee/register`, {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${token}`,
-                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify(formData)
+            body: formData
         })
 
         const data = await response.json();
-        if (data?.batch) {
-            revalidateTag('batches')
+        if (data?.employee) {
+            revalidateTag('employees')
             return {
                 success: true,
-                ...data
+                ...data.employee
             }
         }
         return data;
@@ -30,24 +29,23 @@ export async function addBatch(formData) {
     }
 }
 
-export async function updateBatch(id, formData) {
+export async function updateEmployee(id, formData) {
     const session = await auth()
     const token = session?.accessToken
 
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/batches/${id}`, {
+        const response = await fetch(`${process.env.API_URL}/v2/employee/${id}`, {
             method: "PATCH",
             headers: {
-                "Authorization": `Bearer ${token}`,
-                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify(formData)
+            body: formData
         })
 
         const data = await response.json();
-        if (data?.batch) {
-            revalidateTag('batches')
-            revalidateTag('batch')
+        if (data?.employee) {
+            revalidateTag('employees')
+            revalidateTag('employee')
             return {
                 success: true,
                 ...data
@@ -59,23 +57,20 @@ export async function updateBatch(id, formData) {
     }
 }
 
-export async function deleteBatch(id) {
+export async function deleteEmployee(id) {
     const session = await auth()
     const token = session?.accessToken
 
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/batches/${id}`, {
+        const response = await fetch(`${process.env.API_URL}/v2/employee/${id}`, {
             method: "DELETE",
             headers: {
-                "Authorization": `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
+                "Authorization": `Bearer ${token}`
+            }
         })
 
         const data = await response.json();
-        revalidateTag('batches')
-        revalidateTag('students')
-        revalidateTag('admissions')
+        revalidateTag('employees')
         return data;
     } catch (error) {
         throw new Error('Internal Server Error');

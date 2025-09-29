@@ -2,7 +2,6 @@
 
 import { Alert, Box, Button, createListCollection, Field, Flex, Input, Portal, Select } from "@chakra-ui/react"
 import CalendarInput from "@/components/admin/calendar-input";
-import { getAllCourses } from "@/app/actions/courses";
 import { addBatch } from "@/app/actions/batches";
 import { parseDate } from "@/lib/utils";
 import { useFormStatus } from "react-dom"
@@ -28,7 +27,10 @@ function NewBatch() {
 
         async function fetchCourses() {
             try {
-                const response = await getAllCourses({ search: courseType })
+                const res = await fetch(`/api/courses?search=${courseType}`, {
+                    credentials: "include",
+                })
+                const response = await res.json()
 
                 if (response?.courses) {
                     const cList = response.courses.map((c) => {

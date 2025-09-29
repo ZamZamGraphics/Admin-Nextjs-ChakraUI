@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { parseDate, totalPayment } from "@/lib/utils";
-import { addPayment, getStdAdmission } from "@/app/actions/admissions";
+import { addPayment } from "@/app/actions/admissions";
 
 function PaymentPage() {
     const { pending } = useFormStatus();
@@ -33,7 +33,10 @@ function PaymentPage() {
     useEffect(() => {
         async function fetchStudent() {
             try {
-                const response = await getStdAdmission(batch, studentId)
+                const res = await fetch(`/api/admission/${batch}/${studentId}`, {
+                    credentials: "include",
+                })
+                const response = await res.json()
                 if (response?.admission) {
                     const { admission } = response;
                     setStudent(admission?.student);

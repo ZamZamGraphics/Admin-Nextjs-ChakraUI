@@ -2,7 +2,7 @@
 
 import { Alert, Box, Button, createListCollection, Field, Flex, Input, Portal, Select } from "@chakra-ui/react"
 import CalendarInput from "@/components/admin/calendar-input";
-import { getBatch, updateBatch } from "@/app/actions/batches";
+import { updateBatch } from "@/app/actions/batches";
 import { parseDate } from "@/lib/utils";
 import { useFormStatus } from "react-dom"
 import { useEffect, useState } from "react"
@@ -25,7 +25,10 @@ function BatchEdit() {
   useEffect(() => {
     async function fetchBatch() {
       try {
-        const response = await getBatch(id);
+        const res = await fetch(`/api/batches/${id}`, {
+          credentials: "include",
+        })
+        const response = await res.json()
         if (response) {
           setBatchNo(response?.batchNo)
           setStudent(response?.student)

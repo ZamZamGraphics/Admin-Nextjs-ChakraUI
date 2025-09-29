@@ -1,17 +1,15 @@
 import { Suspense } from "react";
 import { Alert } from "@chakra-ui/react";
-import EditUser from "../_components/edit-user";
-import { auth } from "@/auth";
 import { serverFetchById } from "@/utils";
+import EditEmployee from "../_components/edit-employee";
 
-async function page() {
+async function page({ params }) {
+    const { id } = await params;
     try {
-        const session = await auth();
-        const { userid } = session.user
-        const user = await serverFetchById('users', userid)
+        const employee = await serverFetchById('employee', id)
         return (
-            <Suspense fallback="Loading User Profile...">
-                <EditUser userInfo={user} />
+            <Suspense fallback="Loading Edit Employee...">
+                <EditEmployee employeeInfo={employee} />
             </Suspense>
         )
     } catch (error) {

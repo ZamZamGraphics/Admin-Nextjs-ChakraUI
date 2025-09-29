@@ -1,7 +1,7 @@
 "use client"
 
 import { Alert, Box, Button, createListCollection, Field, Flex, Input, Portal, Select, Textarea } from "@chakra-ui/react"
-import { getCourse, updateCourse } from "@/app/actions/courses";
+import { updateCourse } from "@/app/actions/courses";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react"
 import { useFormStatus } from "react-dom"
@@ -25,7 +25,10 @@ function CourseEdit() {
     useEffect(() => {
         async function fetchCourse() {
             try {
-                const response = await getCourse(id);
+                const res = await fetch(`/api/courses/${id}`, {
+                    credentials: "include",
+                })
+                const response = await res.json()
                 if (response) {
                     setCourse({
                         name: response?.name,

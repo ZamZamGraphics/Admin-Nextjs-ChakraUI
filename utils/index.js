@@ -39,3 +39,33 @@ export const serverFetchById = async (apiPath, id) => {
     if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
     return res.json();
 };
+
+export const getStdAdmission = async (batchNo, studentId) => {
+    const cookieString = (await cookies())
+        .getAll()
+        .map((c) => `${c.name}=${c.value}`)
+        .join("; ");
+
+    const res = await fetch(
+        `${process.env.NEXTAUTH_URL}/api/admission/${batchNo}/${studentId}`,
+        { headers: { Cookie: cookieString } }
+    );
+
+    if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
+    return res.json();
+}
+
+export const getStudentByStudentId = async (studentId) => {
+    const cookieString = (await cookies())
+        .getAll()
+        .map((c) => `${c.name}=${c.value}`)
+        .join("; ");
+
+    const res = await fetch(
+        `${process.env.NEXTAUTH_URL}/api/students/verify/${studentId}`,
+        { headers: { Cookie: cookieString } }
+    );
+
+    if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
+    return res.json();
+}

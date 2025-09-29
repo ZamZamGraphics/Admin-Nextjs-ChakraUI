@@ -19,7 +19,7 @@ export default function DeleteDialog({ id }) {
             <Dialog.Positioner>
                 <Dialog.Content>
                     <Dialog.Header>
-                        <Dialog.Title>Delete Student</Dialog.Title>
+                        <Dialog.Title>Delete Expense</Dialog.Title>
                         <Dialog.CloseTrigger asChild>
                             <CloseButton size="sm" />
                         </Dialog.CloseTrigger>

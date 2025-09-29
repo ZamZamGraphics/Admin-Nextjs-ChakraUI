@@ -19,13 +19,13 @@ export default function DeleteDialog({ id }) {
             <Dialog.Positioner>
                 <Dialog.Content>
                     <Dialog.Header>
-                        <Dialog.Title>Delete Student</Dialog.Title>
+                        <Dialog.Title>Delete User</Dialog.Title>
                         <Dialog.CloseTrigger asChild>
                             <CloseButton size="sm" />
                         </Dialog.CloseTrigger>
                     </Dialog.Header>
                     <Dialog.Body>
-                        Are you sure you want to delete this student?
+                        Are you sure you want to delete this user?
                     </Dialog.Body>
                     <Dialog.Footer>
                         <Dialog.ActionTrigger asChild>
