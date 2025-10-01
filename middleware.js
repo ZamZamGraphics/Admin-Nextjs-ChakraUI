@@ -1,4 +1,4 @@
-import { auth, signOut } from "@/auth"
+import { auth } from "@/auth"
 import { NextResponse } from "next/server"
 import { jwtVerify } from 'jose';
 
@@ -25,8 +25,7 @@ export default auth(async (req) => {
             const secret = new TextEncoder().encode(process.env.JWT_SECRET);
             await jwtVerify(token, secret);
         } catch (error) {
-            const res = await signOut({ redirect: true, callbackUrl: "/login" })
-            return res
+            return NextResponse.redirect(new URL("/login", req.url))
         }
     }
 

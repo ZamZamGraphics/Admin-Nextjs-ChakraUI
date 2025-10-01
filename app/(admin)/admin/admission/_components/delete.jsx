@@ -1,16 +1,21 @@
 "use client"
 
-import {
-    Dialog,
-    Button,
-    CloseButton,
-    Portal,
-} from "@chakra-ui/react"
+import { Dialog, Button, CloseButton, Portal } from "@chakra-ui/react"
+import { deleteAdmission } from "@/app/actions/admissions"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 export default function DeleteDialog({ id }) {
-    const handleDelete = () => {
-        console.log("Deleting admission with id:", id)
-        // fetch("/api/admission/" + id, { method: "DELETE" })
+    const [error, setError] = useState("")
+    const router = useRouter()
+
+    const handleDelete = async () => {
+        try {
+            await deleteAdmission(id);
+            router.push('/admin/admission')
+        } catch (e) {
+            setError({ message: e.message });
+        }
     }
 
     return (
@@ -25,6 +30,7 @@ export default function DeleteDialog({ id }) {
                         </Dialog.CloseTrigger>
                     </Dialog.Header>
                     <Dialog.Body>
+                        {error?.message && <Text colorPalette="red">{error?.message}</Text>}
                         Are you sure you want to delete this admission?
                     </Dialog.Body>
                     <Dialog.Footer>

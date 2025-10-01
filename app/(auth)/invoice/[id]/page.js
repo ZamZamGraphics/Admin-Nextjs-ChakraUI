@@ -14,7 +14,7 @@ async function page({ params }) {
 
     return (
         <div>
-            <h3>Admission ID : {id}</h3>
+            <h3>Invoice ID : {id}</h3>
             <HStack>
                 <Button asChild colorPalette="blue">
                     <Link href="/">Home</Link>
