@@ -4,16 +4,28 @@ import Link from 'next/link'
 import Logo from '@/components/ui/logo'
 import { LuUser } from 'react-icons/lu'
 import { PasswordInput } from '@/components/ui/password-input'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ceredntialLogin } from '@/app/actions'
-import { signIn } from "next-auth/react"
+import { signIn, signOut } from "next-auth/react"
 import { useFormStatus } from 'react-dom'
+import { useSearchParams } from 'next/navigation'
 
 function LoginPage() {
     const { pending } = useFormStatus();
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState({})
+
+    const params = useSearchParams()
+    const autologout = params.get("autologout")
+
+    useEffect(() => {
+        if (autologout) {
+            signOut({ redirect: false }).then(() => {
+                window.location.href = "/login"
+            })
+        }
+    }, [autologout])
 
     async function handleSubmit(event) {
         event.preventDefault();

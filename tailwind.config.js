@@ -7,7 +7,12 @@ module.exports = {
         "./node_modules/@shadcn/ui/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
-        extend: {},
+        extend: {
+            screens: {
+                print: { raw: 'print' },
+                screen: { raw: 'screen' },
+            },
+        },
     },
     plugins: [],
 }

@@ -7,6 +7,21 @@ html, body {
     overflow-x: hidden;
 }
 
+@media print {
+  * {
+    -webkit-print-color-adjust: exact; /* Chrome, Edge, Safari */
+    print-color-adjust: exact;         /* Standard */
+  }
+  body {
+    width: 210mm;
+    height: 297mm;
+  }
+  @page {
+    size:a4;
+    margin: 0;
+  }
+}
+
 @theme inline {
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
