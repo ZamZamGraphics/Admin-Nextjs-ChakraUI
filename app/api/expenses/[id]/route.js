@@ -4,20 +4,18 @@ export const revalidate = 300
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
-export async function GET(req) {
+export async function GET(req, { params }) {
     try {
+        const { id } = await params
         const session = await auth()
         const token = session?.accessToken
 
-        const { searchParams } = new URL(req.url)
-        const query = searchParams.toString()
-
-        const res = await fetch(`${process.env.API_URL}/v2/students${query ? "?" + query : ""}`, {
+        const res = await fetch(`${process.env.API_URL}/v2/expenses/${id}`, {
             headers: {
                 "Authorization": `Bearer ${token}`
             },
             next: {
-                tags: ['students'],
+                tags: ['expense'],
                 revalidate: 300
             },
         })

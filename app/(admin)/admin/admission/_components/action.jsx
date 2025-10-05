@@ -24,7 +24,7 @@ function Action({ id }) {
                             <Menu.Item
                                 value="print"
                                 cursor="pointer"
-                            // as={Link} href={`/print/${id}`}
+                                as={Link} href={`/invoice/${id}`}
                             >
                                 <Icon><LuPrinter /></Icon>
                                 Print

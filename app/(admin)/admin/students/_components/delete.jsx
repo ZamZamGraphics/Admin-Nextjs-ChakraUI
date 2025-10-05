@@ -1,20 +1,13 @@
 "use client"
 
 import { deleteStudent } from "@/app/actions/students"
-import {
-    Dialog,
-    Button,
-    CloseButton,
-    Portal,
-    Text,
-} from "@chakra-ui/react"
-import { useRouter } from "next/navigation";
+import { Dialog, Button, CloseButton, Portal } from "@chakra-ui/react"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 export default function DeleteDialog({ id }) {
-    const [error, setError] = useState("");
-
-    const router = useRouter();
+    const [error, setError] = useState("")
+    const router = useRouter()
 
     const handleDelete = async () => {
         try {

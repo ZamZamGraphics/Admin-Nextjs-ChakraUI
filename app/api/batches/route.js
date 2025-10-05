@@ -1,5 +1,5 @@
 export const dynamic = "force-dynamic"; // cacheable
-export const revalidate = 60 * 5
+export const revalidate = 300
 
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
@@ -18,12 +18,12 @@ export async function GET(req) {
             },
             next: {
                 tags: ['batches'],
-                revalidate: 60 * 5
+                revalidate: 300
             },
         })
 
         const data = await res.json();
-        return NextResponse.json(data)
+        return NextResponse.json(data, { status: res.status })
     } catch (err) {
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
     }

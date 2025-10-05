@@ -5,12 +5,26 @@ import {
     Button,
     CloseButton,
     Portal,
+    Text,
 } from "@chakra-ui/react"
+import { useState } from "react"
+import { useRouter } from "next/navigation";
+import { deleteExpense } from "@/app/actions/expenses";
 
 export default function DeleteDialog({ id }) {
-    const handleDelete = () => {
-        console.log("Deleting student with id:", id)
-        // fetch("/api/students/" + id, { method: "DELETE" })
+    const [error, setError] = useState("");
+
+    const router = useRouter();
+
+    const handleDelete = async () => {
+        try {
+            const res = await deleteExpense(id);
+            console.log(res)
+            router.push('/admin/expense')
+        } catch (e) {
+            console.log(e)
+            setError({ message: e.message });
+        }
     }
 
     return (
@@ -25,7 +39,8 @@ export default function DeleteDialog({ id }) {
                         </Dialog.CloseTrigger>
                     </Dialog.Header>
                     <Dialog.Body>
-                        Are you sure you want to delete this student?
+                        {error?.message && <Text colorPalette="red">{error?.message}</Text>}
+                        Are you sure you want to delete this expense?
                     </Dialog.Body>
                     <Dialog.Footer>
                         <Dialog.ActionTrigger asChild>

@@ -2,8 +2,8 @@
 
 import { LuEllipsisVertical, LuSquarePen, LuTrash } from "react-icons/lu"
 import { Box, Dialog, Icon, Menu, Portal, useDisclosure } from "@chakra-ui/react"
-import Link from "next/link"
 import DeleteDialog from "./delete"
+import Link from "next/link"
 
 function Action({ id }) {
     const { open, onOpen, onClose } = useDisclosure()
@@ -22,7 +22,7 @@ function Action({ id }) {
                     <Menu.Positioner>
                         <Menu.Content>
                             <Menu.Item
-                                value="edit"
+                                value="print"
                                 cursor="pointer"
                                 as={Link} href={`/admin/students/${id}`}
                             >

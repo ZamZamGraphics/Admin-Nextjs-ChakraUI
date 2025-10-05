@@ -84,7 +84,7 @@ async function StudentComponent({ queryString }) {
                     <Table.Cell colSpan={8}>
                         <Alert.Root status="warning">
                             <Alert.Indicator />
-                            <Alert.Title>User Not Found</Alert.Title>
+                            <Alert.Title>Student Not Found</Alert.Title>
                         </Alert.Root>
                     </Table.Cell>
                 </Table.Row>

@@ -12,12 +12,12 @@ export async function GET(req) {
         const { searchParams } = new URL(req.url)
         const query = searchParams.toString()
 
-        const res = await fetch(`${process.env.API_URL}/v2/students${query ? "?" + query : ""}`, {
+        const res = await fetch(`${process.env.API_URL}/v2/expenses${query ? "?" + query : ""}`, {
             headers: {
                 "Authorization": `Bearer ${token}`
             },
             next: {
-                tags: ['students'],
+                tags: ['expenses'],
                 revalidate: 300
             },
         })
