@@ -18,9 +18,8 @@ export default function DeleteDialog({ id }) {
 
     const handleDelete = async () => {
         try {
-            const res = await deleteExpense(id);
-            console.log(res)
-            router.push('/admin/expense')
+            await deleteExpense(id);
+            router.push(`/admin/expense?deleted=${id}`)
         } catch (e) {
             console.log(e)
             setError({ message: e.message });

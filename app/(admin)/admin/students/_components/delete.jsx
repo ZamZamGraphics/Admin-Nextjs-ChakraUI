@@ -12,7 +12,7 @@ export default function DeleteDialog({ id }) {
     const handleDelete = async () => {
         try {
             await deleteStudent(id);
-            router.push('/admin/students')
+            router.push(`/admin/students?deleted=${id}`)
         } catch (e) {
             setError({ message: e.message });
         }

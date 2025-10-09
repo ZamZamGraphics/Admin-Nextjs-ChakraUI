@@ -19,7 +19,7 @@ export default function DeleteDialog({ id }) {
     const handleDelete = async () => {
         try {
             await deleteEmployee(id);
-            router.push('/admin/employee')
+            router.push(`/admin/employee?deleted=${id}`)
         } catch (e) {
             setError({ message: e.message });
         }

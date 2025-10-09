@@ -1,27 +1,28 @@
-import { Suspense } from "react"
-import { serverFetch } from "@/utils";
+"use client"
+
+import { Flex, Grid, GridItem, Table, Text } from "@chakra-ui/react"
 import Search from "@/components/admin/search"
 import Pagination from "@/components/admin/pagination"
-import { Flex, Grid, GridItem, Table, Text } from "@chakra-ui/react"
 import CoursesComponent from "./_components/courses-component";
-import LoadingCourses from "./_components/courses-loading";
 import CourseEdit from "./_components/course-edit";
 import NewCourse from "./_components/new-course";
+import { useSearchParams } from "next/navigation";
+import { useFetchData } from "@/hooks/useFetchData";
+import Loading from "@/components/admin/loading";
+import Error from "@/components/admin/error";
 
-async function page(props) {
-    let totalData;
-    const searchParams = await props.searchParams;
+function CoursesPage() {
+    const searchParams = useSearchParams()
+    const limit = Number(searchParams?.limit) || 10
+    const { data: { courses, total }, loading, error } = useFetchData('courses', limit)
 
-    const queryString = {
-        page: Number(searchParams?.page) || 1,
-        limit: Number(searchParams?.limit) || 10,
-        search: searchParams?.search || ""
-    }
-    try {
-        const response = await serverFetch('courses', queryString)
-        totalData = response?.total || 0;
-    } catch (err) {
-        console.error(err);
+    let content = null
+    if (loading) {
+        content = <Loading col={5} />
+    } else if (error) {
+        content = <Error col={5} error={error} />
+    } else {
+        content = <CoursesComponent data={courses} />
     }
 
     return (
@@ -43,7 +44,7 @@ async function page(props) {
                     gap={3}
                     mb={3}
                 >
-                    <Text textStyle="md">Total : {totalData}</Text>
+                    <Text textStyle="md">Total : {total}</Text>
                     <Search placeholder="Search Courses" />
                 </Flex>
                 <Table.ScrollArea borderWidth="1px" maxW="full">
@@ -63,19 +64,17 @@ async function page(props) {
                             </Table.Row>
                         </Table.Header>
                         <Table.Body textStyle="md">
-                            <Suspense fallback={<LoadingCourses />}>
-                                <CoursesComponent queryString={queryString} />
-                            </Suspense>
+                            {content}
                         </Table.Body>
                     </Table.Root>
                 </Table.ScrollArea>
                 <Pagination
-                    limit={queryString.limit}
-                    totalData={totalData}
+                    limit={limit}
+                    totalData={total || 0}
                 />
             </GridItem>
         </Grid>
     )
 }
 
-export default page
+export default CoursesPage

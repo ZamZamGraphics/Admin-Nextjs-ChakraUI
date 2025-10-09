@@ -11,8 +11,8 @@ export default function DeleteDialog({ id }) {
 
     const handleDelete = async () => {
         try {
-            await deleteAdmission(id);
-            router.push('/admin/admission')
+            await deleteAdmission(id)
+            router.push(`/admin/admission?deleted=${id}`)
         } catch (e) {
             setError({ message: e.message });
         }

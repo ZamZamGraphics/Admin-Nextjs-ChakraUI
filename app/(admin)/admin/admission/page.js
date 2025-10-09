@@ -1,28 +1,26 @@
-import { Suspense } from "react";
+"use client"
+
 import { Box, Flex, Table, Text } from "@chakra-ui/react";
 import Search from "@/components/admin/search";
 import Pagination from "@/components/admin/pagination";
-import LoadingAdmission from "./_components/admission-loading";
 import AdmissionComponent from "./_components/admission-component";
-import { serverFetch } from "@/utils";
+import { useSearchParams } from "next/navigation";
+import { useFetchData } from "@/hooks/useFetchData";
+import Loading from "@/components/admin/loading";
+import Error from "@/components/admin/error";
 
-async function page(props) {
-    let totalData
-    const searchParams = await props.searchParams
+function AdmissionPage() {
+    const searchParams = useSearchParams()
+    const limit = Number(searchParams?.limit) || 10
+    const { data: { admission, total }, loading, error } = useFetchData('admission', limit)
 
-    const queryString = {
-        page: Number(searchParams?.page) || 1,
-        limit: Number(searchParams?.limit) || 30,
-        search: searchParams?.search || "",
-        from: searchParams?.from || "",
-        to: searchParams?.to || ""
-    }
-
-    try {
-        const response = await serverFetch('admission', queryString)
-        totalData = response?.total || 0;
-    } catch (err) {
-        console.error(err);
+    let content = null
+    if (loading) {
+        content = <Loading col={7} />
+    } else if (error) {
+        content = <Error col={7} error={error} />
+    } else {
+        content = <AdmissionComponent data={admission} />
     }
 
     return (
@@ -36,7 +34,7 @@ async function page(props) {
                 gap={3}
                 mb={3}
             >
-                <Text textStyle="md">Total : {totalData}</Text>
+                <Text textStyle="md">Total : {total}</Text>
                 <Search placeholder="Search Admission" />
             </Flex>
             <Table.ScrollArea borderWidth="1px" maxW="full">
@@ -63,18 +61,16 @@ async function page(props) {
                         </Table.Row>
                     </Table.Header>
                     <Table.Body textStyle="md">
-                        <Suspense fallback={<LoadingAdmission />}>
-                            <AdmissionComponent queryString={queryString} />
-                        </Suspense>
+                        {content}
                     </Table.Body>
                 </Table.Root>
             </Table.ScrollArea>
             <Pagination
-                limit={queryString.limit}
-                totalData={totalData}
+                limit={limit}
+                totalData={total || 0}
             />
         </Box>
     )
 }
 
-export default page
+export default AdmissionPage

@@ -1,9 +1,9 @@
 import { Alert, Spinner, Table } from '@chakra-ui/react'
 
-function LoadingBatches() {
+function Loading({ col }) {
     return (
         <Table.Row>
-            <Table.Cell colSpan={7}>
+            <Table.Cell colSpan={col}>
                 <Alert.Root status="warning">
                     <Alert.Indicator>
                         <Spinner size="sm" />
@@ -15,4 +15,4 @@ function LoadingBatches() {
     )
 }
 
-export default LoadingBatches
+export default Loading

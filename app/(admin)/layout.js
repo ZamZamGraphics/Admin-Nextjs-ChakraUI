@@ -1,10 +1,13 @@
 import AdminLayout from "@/components/admin/admin-layout"
+import { Suspense } from "react"
 
 async function DashboardLayout({ children }) {
     return (
-        <AdminLayout>
-            {children}
-        </AdminLayout>
+        <Suspense fallback="Loading...">
+            <AdminLayout>
+                {children}
+            </AdminLayout>
+        </Suspense>
     )
 }
 

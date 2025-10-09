@@ -1,31 +1,8 @@
 import { Alert, Table } from "@chakra-ui/react";
-import { serverFetch } from "@/utils";
 import Action from "./action";
 import dayjs from "dayjs";
 
-async function ExpenseComponent({ queryString }) {
-    let data, error;
-
-    try {
-        const response = await serverFetch('expenses', queryString)
-        data = response?.expenses || {};
-    } catch (err) {
-        error = err;
-    }
-
-    if (error) {
-        return (
-            <Table.Row>
-                <Table.Cell colSpan={6}>
-                    <Alert.Root status="error">
-                        <Alert.Indicator />
-                        <Alert.Title>{error.message}</Alert.Title>
-                    </Alert.Root>
-                </Table.Cell>
-            </Table.Row>
-        )
-    }
-
+function ExpenseComponent({ data }) {
     return (
         <>
             {data?.length > 0 ? data.map((expense) => (

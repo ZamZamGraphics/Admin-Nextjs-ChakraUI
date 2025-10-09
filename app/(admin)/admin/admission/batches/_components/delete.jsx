@@ -18,7 +18,7 @@ export default function DeleteDialog({ id }) {
     const handleDelete = async () => {
         try {
             await deleteBatch(id);
-            router.push('/admin/admission/batches')
+            router.push(`/admin/admission/batches?deleted=${id}`)
         } catch (e) {
             setError({ message: e.message });
         }

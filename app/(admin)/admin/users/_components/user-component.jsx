@@ -1,33 +1,9 @@
 import { Alert, Flex, Table, Text, Avatar, Dialog } from "@chakra-ui/react";
-import { serverFetch } from "@/utils";
 import Status from "@/components/admin/status";
 import Action from "./action";
-import Link from "next/link";
 import UserDialog from "./user-dialog";
 
-async function UserComponent({ queryString }) {
-    let data, error;
-
-    try {
-        const response = await serverFetch('users', queryString)
-        data = response?.users || {};
-    } catch (err) {
-        error = err;
-    }
-
-    if (error) {
-        return (
-            <Table.Row>
-                <Table.Cell colSpan={6}>
-                    <Alert.Root status="error">
-                        <Alert.Indicator />
-                        <Alert.Title>{error.message}</Alert.Title>
-                    </Alert.Root>
-                </Table.Cell>
-            </Table.Row>
-        )
-    }
-
+function UserComponent({ data }) {
     return (
         <>
             {data?.length > 0 ? data.map((user) => (
@@ -38,7 +14,7 @@ async function UserComponent({ queryString }) {
                                 <Flex align="center" gap={3} cursor="pointer">
                                     <Avatar.Root>
                                         <Avatar.Fallback name={user?.fullname} />
-                                        <Avatar.Image src={user?.avatar && `${process.env.API_URL}/upload/${user.avatar}`} />
+                                        <Avatar.Image src={user?.avatar && `${process.env.NEXT_PUBLIC_API_URL}/upload/${user.avatar}`} />
                                     </Avatar.Root>
                                     <Text fontWeight="semibold">
                                         {user?.fullname}

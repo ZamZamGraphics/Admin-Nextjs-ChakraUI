@@ -1,32 +1,9 @@
 import { Alert, Flex, Table, Text, Avatar, Dialog } from "@chakra-ui/react";
-import { serverFetch } from "@/utils";
 import Status from "@/components/admin/status";
 import StudentDialog from "./student-dialog";
 import Action from "./action";
 
-async function StudentComponent({ queryString }) {
-    let data, error;
-
-    try {
-        const response = await serverFetch('students', queryString)
-        data = response?.students || {};
-    } catch (err) {
-        error = err;
-    }
-
-    if (error) {
-        return (
-            <Table.Row>
-                <Table.Cell colSpan={8}>
-                    <Alert.Root status="error">
-                        <Alert.Indicator />
-                        <Alert.Title>{error.message}</Alert.Title>
-                    </Alert.Root>
-                </Table.Cell>
-            </Table.Row>
-        )
-    }
-
+function StudentComponent({ data }) {
     return (
         <>
             {data?.length > 0 ? data.map((std) => (
@@ -42,7 +19,7 @@ async function StudentComponent({ queryString }) {
                                 <Flex align="center" gap={3} cursor="pointer">
                                     <Avatar.Root>
                                         <Avatar.Fallback name={std?.fullName} />
-                                        <Avatar.Image src={std?.avatar && `${process.env.API_URL}/upload/${std.avatar}`} />
+                                        <Avatar.Image src={std?.avatar && `${process.env.NEXT_PUBLIC_API_URL}/upload/${std.avatar}`} />
                                     </Avatar.Root>
                                     <Text fontWeight="semibold">
                                         {std?.fullName}

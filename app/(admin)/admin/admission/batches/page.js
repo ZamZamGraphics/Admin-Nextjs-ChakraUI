@@ -1,29 +1,28 @@
-import { Suspense } from "react"
+"use client"
+
+import { Flex, Grid, GridItem, Table, Text } from "@chakra-ui/react"
 import Search from "@/components/admin/search"
 import Pagination from "@/components/admin/pagination"
-import { Flex, Grid, GridItem, Table, Text } from "@chakra-ui/react"
-import LoadingBatches from "./_components/batches-loading";
 import BatchesComponent from "./_components/batches-component";
 import BatchEdit from "./_components/batch-edit";
 import NewBatch from "./_components/new-batch";
-import { serverFetch } from "@/utils";
+import { useSearchParams } from "next/navigation";
+import { useFetchData } from "@/hooks/useFetchData";
+import Loading from "@/components/admin/loading";
+import Error from "@/components/admin/error";
 
-async function page(props) {
-    let totalData;
-    const searchParams = await props.searchParams;
+function BatchPage() {
+    const searchParams = useSearchParams()
+    const limit = Number(searchParams?.limit) || 10
+    const { data: { batches, total }, loading, error } = useFetchData('batches', limit)
 
-    const queryString = {
-        page: Number(searchParams?.page) || 1,
-        limit: Number(searchParams?.limit) || 10,
-        search: searchParams?.search || "",
-        from: searchParams?.from || "",
-        to: searchParams?.to || ""
-    }
-    try {
-        const response = await serverFetch('batches', queryString)
-        totalData = response?.total || 0;
-    } catch (err) {
-        console.error(err);
+    let content = null
+    if (loading) {
+        content = <Loading col={7} />
+    } else if (error) {
+        content = <Error col={7} error={error} />
+    } else {
+        content = <BatchesComponent data={batches} />
     }
 
     return (
@@ -45,7 +44,7 @@ async function page(props) {
                     gap={3}
                     mb={3}
                 >
-                    <Text textStyle="md">Total : {totalData}</Text>
+                    <Text textStyle="md">Total : {total}</Text>
                     <Search placeholder="Search Batches" />
                 </Flex>
                 <Table.ScrollArea borderWidth="1px" maxW="full">
@@ -67,19 +66,17 @@ async function page(props) {
                             </Table.Row>
                         </Table.Header>
                         <Table.Body textStyle="md">
-                            <Suspense fallback={<LoadingBatches />}>
-                                <BatchesComponent queryString={queryString} />
-                            </Suspense>
+                            {content}
                         </Table.Body>
                     </Table.Root>
                 </Table.ScrollArea>
                 <Pagination
-                    limit={queryString.limit}
-                    totalData={totalData}
+                    limit={limit}
+                    totalData={total || 0}
                 />
             </GridItem>
         </Grid>
     )
 }
 
-export default page
+export default BatchPage

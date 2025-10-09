@@ -1,30 +1,7 @@
 import { Alert, Table } from "@chakra-ui/react";
-import { serverFetch } from "@/utils";
 import Action from "./action";
 
-async function CoursesComponent({ queryString }) {
-    let data, error;
-
-    try {
-        const response = await serverFetch('courses', queryString)
-        data = response?.courses || {};
-    } catch (err) {
-        error = err;
-    }
-
-    if (error) {
-        return (
-            <Table.Row>
-                <Table.Cell colSpan={5}>
-                    <Alert.Root status="error">
-                        <Alert.Indicator />
-                        <Alert.Title>{error.message}</Alert.Title>
-                    </Alert.Root>
-                </Table.Cell>
-            </Table.Row>
-        )
-    }
-
+function CoursesComponent({ data }) {
     return (
         <>
             {data?.length > 0 ? data.map((course) => (

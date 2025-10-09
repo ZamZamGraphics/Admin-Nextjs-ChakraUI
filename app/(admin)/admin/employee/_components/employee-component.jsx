@@ -1,32 +1,9 @@
 import { Alert, Flex, Table, Text, Avatar, Dialog } from "@chakra-ui/react";
-import { serverFetch } from "@/utils";
 import Status from "@/components/admin/status";
 import Action from "./action";
 import EmployeeDialog from "./employee-dialog";
 
-async function EmployeeComponent({ queryString }) {
-    let data, error;
-
-    try {
-        const response = await serverFetch('employee', queryString)
-        data = response?.employee || {};
-    } catch (err) {
-        error = err;
-    }
-
-    if (error) {
-        return (
-            <Table.Row>
-                <Table.Cell colSpan={6}>
-                    <Alert.Root status="error">
-                        <Alert.Indicator />
-                        <Alert.Title>{error.message}</Alert.Title>
-                    </Alert.Root>
-                </Table.Cell>
-            </Table.Row>
-        )
-    }
-
+function EmployeeComponent({ data }) {
     return (
         <>
             {data?.length > 0 ? data.map((employee) => (
@@ -37,7 +14,7 @@ async function EmployeeComponent({ queryString }) {
                                 <Flex align="center" gap={3} cursor="pointer">
                                     <Avatar.Root>
                                         <Avatar.Fallback name={employee?.fullName} />
-                                        <Avatar.Image src={employee?.avatar && `${process.env.API_URL}/upload/${employee.avatar}`} />
+                                        <Avatar.Image src={employee?.avatar && `${process.env.NEXT_PUBLIC_API_URL}/upload/${employee.avatar}`} />
                                     </Avatar.Root>
                                     <Text fontWeight="semibold">
                                         {employee?.fullName}

@@ -1,16 +1,22 @@
 "use client"
 
-import {
-    Dialog,
-    Button,
-    CloseButton,
-    Portal,
-} from "@chakra-ui/react"
+import { deleteUser } from "@/app/actions/users"
+import { Dialog, Button, CloseButton, Portal } from "@chakra-ui/react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 export default function DeleteDialog({ id }) {
-    const handleDelete = () => {
-        console.log("Deleting user with id:", id)
-        // fetch("/api/users/" + id, { method: "DELETE" })
+    const [error, setError] = useState("")
+    const router = useRouter()
+
+    const handleDelete = async () => {
+        console.log("Delete User ID : ", id)
+        // try {
+        //     await deleteUser(id);
+        //     router.push(`/admin/users?deleted=${id}`)
+        // } catch (e) {
+        //     setError({ message: e.message });
+        // }
     }
 
     return (
@@ -25,6 +31,7 @@ export default function DeleteDialog({ id }) {
                         </Dialog.CloseTrigger>
                     </Dialog.Header>
                     <Dialog.Body>
+                        {error?.message && <Text colorPalette="red">{error?.message}</Text>}
                         Are you sure you want to delete this user?
                     </Dialog.Body>
                     <Dialog.Footer>

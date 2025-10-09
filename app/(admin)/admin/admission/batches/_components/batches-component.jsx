@@ -1,33 +1,10 @@
 import { Alert, Table, Text } from "@chakra-ui/react";
-import { serverFetch } from "@/utils";
 import Action from "./action";
 import dayjs from "dayjs";
 dayjs.extend(isBetween);
 import isBetween from "dayjs/plugin/isBetween";
 
-async function BatchesComponent({ queryString }) {
-    let data, error;
-
-    try {
-        const response = await serverFetch('batches', queryString)
-        data = response?.batches || {};
-    } catch (err) {
-        error = err;
-    }
-
-    if (error) {
-        return (
-            <Table.Row>
-                <Table.Cell colSpan={7}>
-                    <Alert.Root status="error">
-                        <Alert.Indicator />
-                        <Alert.Title>{error.message}</Alert.Title>
-                    </Alert.Root>
-                </Table.Cell>
-            </Table.Row>
-        )
-    }
-
+function BatchesComponent({ data }) {
     return (
         <>
             {data?.length > 0 ? data.map((batch) => (

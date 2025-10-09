@@ -3,7 +3,7 @@ import Status from "@/components/admin/status"
 import dayjs from 'dayjs';
 
 function UserDialog({ user }) {
-    const avatar = user?.avatar && `${process.env.API_URL}/upload/${user.avatar}`
+    const avatar = user?.avatar && `${process.env.NEXT_PUBLIC_API_URL}/upload/${user.avatar}`
     return (
         <Portal>
             <Dialog.Backdrop />

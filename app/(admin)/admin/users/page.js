@@ -1,25 +1,26 @@
-import { Suspense } from "react";
-import { serverFetch } from "@/utils";
+"use client"
+
 import { Box, Flex, Table, Text } from "@chakra-ui/react";
 import Search from "@/components/admin/search";
 import Pagination from "@/components/admin/pagination";
-import UserLoading from "./_components/user-loading";
 import UserComponent from "./_components/user-component";
+import { useSearchParams } from "next/navigation";
+import { useFetchData } from "@/hooks/useFetchData";
+import Loading from "@/components/admin/loading";
+import Error from "@/components/admin/error";
 
-async function page(props) {
-    let totalData;
-    const searchParams = await props.searchParams;
+function UsersPage() {
+    const searchParams = useSearchParams()
+    const limit = Number(searchParams?.limit) || 10
+    const { data: { users, total }, loading, error } = useFetchData('users', limit)
 
-    const queryString = {
-        page: Number(searchParams?.page) || 1,
-        limit: Number(searchParams?.limit) || 30,
-        search: searchParams?.search || ""
-    }
-    try {
-        const response = await serverFetch('users', queryString)
-        totalData = response?.total || 0;
-    } catch (err) {
-        console.error(err);
+    let content = null
+    if (loading) {
+        content = <Loading col={6} />
+    } else if (error) {
+        content = <Error col={6} error={error} />
+    } else {
+        content = <UserComponent data={users} />
     }
 
     return (
@@ -33,7 +34,7 @@ async function page(props) {
                 gap={3}
                 mb={3}
             >
-                <Text textStyle="md">Total : {totalData}</Text>
+                <Text textStyle="md">Total : {total}</Text>
                 <Search placeholder="Search User" />
             </Flex>
             <Table.ScrollArea borderWidth="1px" maxW="full">
@@ -54,18 +55,16 @@ async function page(props) {
                         </Table.Row>
                     </Table.Header>
                     <Table.Body textStyle="md">
-                        <Suspense fallback={<UserLoading />}>
-                            <UserComponent queryString={queryString} />
-                        </Suspense>
+                        {content}
                     </Table.Body>
                 </Table.Root>
             </Table.ScrollArea>
             <Pagination
-                limit={queryString.limit}
-                totalData={totalData}
+                limit={limit}
+                totalData={total || 0}
             />
         </Box>
     )
 }
 
-export default page
+export default UsersPage
