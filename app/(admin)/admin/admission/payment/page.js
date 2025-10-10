@@ -97,6 +97,7 @@ function PaymentPage() {
 
             try {
                 const response = await addPayment(data)
+                window.scrollTo({ top: 0, behavior: 'smooth' });
 
                 if (response?.success) {
                     const { admission } = response;

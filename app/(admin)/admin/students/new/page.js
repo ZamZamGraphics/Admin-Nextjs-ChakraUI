@@ -80,6 +80,7 @@ function NewStudentPage() {
             formData.append("status", "Pending");
 
             const response = await addStudent(formData);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
             if (response?.success) {
                 router.push(`/admin/admission/new?studentId=${response.studentId}`)

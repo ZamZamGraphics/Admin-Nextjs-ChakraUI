@@ -55,6 +55,7 @@ function NewUserPage() {
             formData.append("status", "Unverified");
 
             const response = await addUser(formData);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
             if (response?.success) {
                 setSuccess({ message: response?.message });

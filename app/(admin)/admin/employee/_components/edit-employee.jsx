@@ -76,6 +76,7 @@ function EditEmployee({ employeeInfo }) {
             });
 
             const response = await updateEmployee(employeeInfo?._id, formData);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
             if (response?.success) setSuccess({ message: response?.message })
             if (response?.errors) setError({ ...response?.errors })

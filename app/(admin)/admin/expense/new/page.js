@@ -39,6 +39,7 @@ function NewExpensePage() {
                 "date": parseDate(spender.date),
             }
             const response = await addExpense(data);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
             if (response?.success) {
                 setSpender({

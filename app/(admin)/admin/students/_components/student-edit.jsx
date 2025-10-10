@@ -82,6 +82,7 @@ function EditStudent({ std }) {
             formData.append("status", std?.status);
 
             const response = await updateStudent(std._id, formData);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
             if (response?.success) {
                 setSuccess({ message: response?.message })

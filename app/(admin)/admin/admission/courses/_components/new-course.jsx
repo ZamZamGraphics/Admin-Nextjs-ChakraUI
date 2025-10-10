@@ -65,6 +65,7 @@ function NewCourse() {
 
     try {
       const response = await addCourse(course)
+      window.scrollTo({ top: 0, behavior: 'smooth' });
 
       if (response?.success) {
         setSuccess({ message: response?.message })

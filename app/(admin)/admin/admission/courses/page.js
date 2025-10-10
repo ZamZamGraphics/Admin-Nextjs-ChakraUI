@@ -10,11 +10,17 @@ import { useSearchParams } from "next/navigation";
 import { useFetchData } from "@/hooks/useFetchData";
 import Loading from "@/components/admin/loading";
 import Error from "@/components/admin/error";
+import { useEffect, useState } from "react";
 
 function CoursesPage() {
+    const [edit, setEdit] = useState(false)
     const searchParams = useSearchParams()
-    const limit = Number(searchParams?.limit) || 10
+    const limit = 10
     const { data: { courses, total }, loading, error } = useFetchData('courses', limit)
+
+    useEffect(() => {
+        if (searchParams.get("edit")) setEdit(true)
+    }, [searchParams])
 
     let content = null
     if (loading) {
@@ -29,7 +35,7 @@ function CoursesPage() {
         <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap="6">
             <GridItem>
                 <Text mb={5} textStyle="2xl" fontWeight="semibold">Courses</Text>
-                {searchParams?.edit ? (
+                {edit ? (
                     <CourseEdit />
                 ) : (
                     <NewCourse />

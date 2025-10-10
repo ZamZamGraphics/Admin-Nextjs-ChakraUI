@@ -56,6 +56,7 @@ function EditUser({ userInfo }) {
             }
 
             const response = await updateUser(userInfo?._id, formData);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
             if (response?.success) {
                 setSuccess({ message: response?.message });

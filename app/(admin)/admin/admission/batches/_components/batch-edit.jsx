@@ -6,12 +6,17 @@ import { updateBatch } from "@/app/actions/batches";
 import { parseDate } from "@/lib/utils";
 import { useFormStatus } from "react-dom"
 import { useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import dayjs from "dayjs";
 
 function BatchEdit() {
   const searchParams = useSearchParams();
   const id = searchParams.get("edit");
+
+  const { replace } = useRouter()
+  const params = new URLSearchParams(searchParams.toString());
+  const pathname = usePathname()
+
   const { pending } = useFormStatus();
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -21,6 +26,15 @@ function BatchEdit() {
   const [startDate, setStartDate] = useState("");
   const [classDays, setClassDays] = useState("");
   const [classTime, setClassTime] = useState("");
+
+  const reset = () => {
+    setBatchNo("")
+    setStudent("")
+    setCourseName("")
+    setStartDate("")
+    setClassDays("")
+    setClassTime("")
+  }
 
   useEffect(() => {
     async function fetchBatch() {
@@ -42,7 +56,11 @@ function BatchEdit() {
       }
 
     }
-    fetchBatch()
+    if (id) {
+      fetchBatch()
+    } else {
+      reset()
+    }
     setError("");
     setSuccess("");
   }, [id])
@@ -51,6 +69,7 @@ function BatchEdit() {
     e.preventDefault();
     setError("");
     setSuccess("");
+    params.delete("success")
 
     const formData = {
       student,
@@ -61,8 +80,13 @@ function BatchEdit() {
 
     try {
       const response = await updateBatch(id, formData)
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
       if (response?.success) {
         setSuccess({ message: response?.message })
+
+        params.set("success", "true");
+        replace(`${pathname}?${params.toString()}`);
       }
 
       if (response?.errors) {

@@ -161,6 +161,7 @@ function NewAdmission() {
 
             try {
                 const response = await addAdmission(data)
+                window.scrollTo({ top: 0, behavior: 'smooth' });
 
                 if (response?.success) {
                     const { admission } = response;

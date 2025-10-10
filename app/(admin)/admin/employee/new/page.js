@@ -71,6 +71,7 @@ function NewEmployeePage() {
             });
 
             const response = await addEmployee(formData);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
             if (response?.success) router.push(`/admin/employee`)
             if (response?.errors) setError({ ...response?.errors })

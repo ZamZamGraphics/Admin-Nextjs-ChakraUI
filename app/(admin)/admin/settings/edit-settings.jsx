@@ -27,6 +27,7 @@ function SettingsPages({ initial }) {
 
         try {
             const res = await updateSettings(initial?._id, settings)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             if (res?.success) setSuccess({ message: res.message })
             if (res?.errors) setError({ message: res.errors?.perPage?.msg })
         } catch (err) {

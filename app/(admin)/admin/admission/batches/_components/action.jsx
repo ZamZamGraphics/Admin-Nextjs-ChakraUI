@@ -1,12 +1,22 @@
 "use client"
 
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { LuEllipsisVertical, LuSquarePen, LuTrash } from "react-icons/lu"
 import { Box, Dialog, Icon, Menu, Portal, useDisclosure } from "@chakra-ui/react"
-import Link from "next/link"
 import DeleteDialog from "./delete"
 
 function Action({ id }) {
     const { open, onOpen, onClose } = useDisclosure()
+    const searchParams = useSearchParams();
+    const params = new URLSearchParams(searchParams.toString());
+    const { replace } = useRouter()
+    const pathname = usePathname()
+
+    const handleEdit = () => {
+        params.delete("success")
+        params.set("edit", id)
+        replace(`${pathname}?${params.toString()}`)
+    }
 
     return (
         <>
@@ -24,7 +34,7 @@ function Action({ id }) {
                             <Menu.Item
                                 value="edit"
                                 cursor="pointer"
-                                as={Link} href={`/admin/admission/batches?edit=${id}`}
+                                onClick={handleEdit}
                             >
                                 <Icon><LuSquarePen /></Icon>
                                 Edit

@@ -2,13 +2,16 @@
 
 import { Alert, Box, Button, createListCollection, Field, Flex, Input, Portal, Select, Textarea } from "@chakra-ui/react"
 import { updateCourse } from "@/app/actions/courses";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react"
 import { useFormStatus } from "react-dom"
 
 function CourseEdit() {
     const searchParams = useSearchParams();
     const id = searchParams.get("edit")
+    const { replace } = useRouter()
+    const params = new URLSearchParams(searchParams.toString());
+    const pathname = usePathname()
 
     const { pending } = useFormStatus();
     const [error, setError] = useState("");
@@ -44,7 +47,17 @@ function CourseEdit() {
             }
 
         }
-        fetchCourse()
+        if (id) {
+            fetchCourse()
+        } else {
+            setCourse({
+                name: "",
+                slug: "",
+                description: "",
+                duration: "",
+                courseFee: "",
+            })
+        }
         setError("");
         setSuccess("");
     }, [id])
@@ -82,12 +95,17 @@ function CourseEdit() {
         e.preventDefault();
         setError("");
         setSuccess("");
+        params.delete("success")
 
         try {
             const response = await updateCourse(id, course)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
             if (response?.success) {
                 setSuccess({ message: response?.message })
+
+                params.set("success", "true");
+                replace(`${pathname}?${params.toString()}`);
             }
 
             if (response?.errors) {
@@ -204,7 +222,7 @@ function CourseEdit() {
                             colorPalette="gray"
                             loading={pending}
                         >
-                            Add New Course
+                            Update Course
                         </Button>
                     </Box>
                 </Flex>

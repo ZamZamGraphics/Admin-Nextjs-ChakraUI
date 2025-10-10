@@ -4,14 +4,13 @@ import { Box, Flex, Table, Text } from "@chakra-ui/react";
 import Search from "@/components/admin/search";
 import Pagination from "@/components/admin/pagination";
 import AdmissionComponent from "./_components/admission-component";
-import { useSearchParams } from "next/navigation";
 import { useFetchData } from "@/hooks/useFetchData";
 import Loading from "@/components/admin/loading";
 import Error from "@/components/admin/error";
+import useSettings from "@/hooks/useSettings";
 
 function AdmissionPage() {
-    const searchParams = useSearchParams()
-    const limit = Number(searchParams?.limit) || 10
+    const { limit } = useSettings()
     const { data: { admission, total }, loading, error } = useFetchData('admission', limit)
 
     let content = null

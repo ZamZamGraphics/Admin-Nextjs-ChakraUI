@@ -81,6 +81,7 @@ function NewBatch() {
 
         try {
             const response = await addBatch(formData)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
             if (response?.success) {
                 setSuccess({ message: response?.message })
