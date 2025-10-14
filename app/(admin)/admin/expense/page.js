@@ -24,7 +24,7 @@ function ExpensePage() {
 
     return (
         <Box>
-            <Text mb={5} textStyle="2xl" fontWeight="semibold">Courses</Text>
+            <Text mb={5} textStyle="2xl" fontWeight="semibold">All Expense</Text>
             <Flex
                 w="full"
                 direction={{ base: "column", md: "row" }}

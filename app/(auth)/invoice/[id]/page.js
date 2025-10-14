@@ -1,20 +1,42 @@
 import { serverFetchById } from '@/utils'
-import { Theme, Alert, Box, DataList, Grid, GridItem, Table, Text } from '@chakra-ui/react'
+import { Theme, Alert, Box, DataList, Grid, GridItem, Table, Text, Container, Icon } from '@chakra-ui/react'
 import logoLight from "@/public/logo-light.svg"
-import Link from 'next/link'
 import Image from 'next/image'
 import Status from '@/components/admin/status'
 import dayjs from 'dayjs'
 import PrintButton from './print-button'
+import { LuCircleAlert } from 'react-icons/lu'
+import BackButton from './back-button'
+import { totalPayment } from '@/lib/utils'
 
 async function page({ params }) {
     const { id } = await params
 
     try {
         const admission = await serverFetchById('admission', id)
-        const totalPay = admission?.paymentHistory?.reduce((total, history) => {
-            return total + history.amount
-        }, 0);
+
+        if (!admission) {
+            return (
+                <Container maxW="xl" mt={5}>
+                    <Alert.Root status="warning">
+                        <Alert.Content textAlign="center">
+                            <Icon size="2xl" mx="auto" mb={2}>
+                                <LuCircleAlert />
+                            </Icon>
+                            <Alert.Title>
+                                <Text textStyle="xl">The page you were looking for doesn&apos;t exist</Text>
+                            </Alert.Title>
+                            <Alert.Description>
+                                <Text mb={5}>You may have mistyped the address or the page not exist</Text>
+                                <BackButton>Go Back</BackButton>
+                            </Alert.Description>
+                        </Alert.Content>
+                    </Alert.Root>
+                </Container>
+            )
+        }
+
+        const totalPay = totalPayment(admission?.paymentHistory);
         const due = admission?.payableAmount - totalPay;
 
         return (
@@ -34,7 +56,7 @@ async function page({ params }) {
                             alignItems="center"
                         >
                             <GridItem colSpan={2}>
-                                <Link href="/admin/admission">
+                                <BackButton>
                                     <Image
                                         src={logoLight}
                                         alt="Al Madina IT"
@@ -45,7 +67,7 @@ async function page({ params }) {
                                             display: "block",
                                         }}
                                     />
-                                </Link>
+                                </BackButton>
                                 <Box
                                     position="absolute"
                                     top={0}
@@ -305,10 +327,19 @@ async function page({ params }) {
         )
     } catch (e) {
         return (
-            <Alert.Root status="error">
-                <Alert.Indicator />
-                <Alert.Title>{e.message}</Alert.Title>
-            </Alert.Root>
+            <Container maxW="xl" mt={5}>
+                <Alert.Root status="error">
+                    <Alert.Content textAlign="center">
+                        <Icon size="2xl" mx="auto" mb={2}>
+                            <LuCircleAlert />
+                        </Icon>
+                        <Alert.Title>
+                            <Text textStyle="xl">{e.message}</Text>
+                        </Alert.Title>
+                        <BackButton>Go Back</BackButton>
+                    </Alert.Content>
+                </Alert.Root>
+            </Container>
         )
     }
 }

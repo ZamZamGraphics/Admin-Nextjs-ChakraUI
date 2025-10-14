@@ -16,7 +16,7 @@ const formatDate = (d) => {
 
 const isValidDate = (date) => date instanceof Date && !isNaN(date.getTime());
 
-export default function CalendarInput({ name, value, onChange, placeholder }) {
+export default function CalendarInput({ name, value, onChange, placeholder, ...props }) {
     const [open, setOpen] = useState(false);
     const [month, setMonth] = useState(value ? new Date(value.split("-").reverse().join("-")) : new Date())
 
@@ -39,6 +39,7 @@ export default function CalendarInput({ name, value, onChange, placeholder }) {
                 <PopoverTrigger asChild>
                     <InputGroup endElement={<LuCalendar />}>
                         <Input
+                            {...props}
                             name={name}
                             value={value}
                             placeholder={placeholder || "DD-MM-YYYY"}

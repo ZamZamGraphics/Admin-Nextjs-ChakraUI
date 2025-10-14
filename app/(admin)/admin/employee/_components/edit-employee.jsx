@@ -367,7 +367,7 @@ function EditEmployee({ employeeInfo }) {
                     type='submit'
                     colorPalette="gray"
                     loading={pending}
-                >Add New Employee</Button>
+                >Update Employee</Button>
             </form>
         </Box>
     )

@@ -10,11 +10,16 @@ import {
     CloseButton,
     Portal,
 } from "@chakra-ui/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { LuMenu } from "react-icons/lu"
+import { signOut } from "next-auth/react"
 
-function AdminLayout({ children }) {
+function AdminLayout({ children, auth }) {
     const [open, setOpen] = useState(false)
+
+    useEffect(() => {
+        if (!auth) signOut()
+    }, [auth])
 
     const sidebarWidth = "240px"
     const headerHeight = "64px"
