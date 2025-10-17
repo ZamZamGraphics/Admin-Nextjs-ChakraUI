@@ -1,12 +1,13 @@
 "use client"
 
-import { Box, Text, Flex, Grid, GridItem, Card, Icon } from '@chakra-ui/react'
-import { useEffect, useState } from 'react'
+import { Box, Text, Flex, Grid, GridItem, Card, Icon, Heading } from '@chakra-ui/react'
 import { LuDollarSign, LuGraduationCap, LuLandmark, LuLayers, LuNotebookText } from 'react-icons/lu'
-import { clientFetch } from '@/utils/client-fetch'
 import CalendarInput from '@/components/admin/calendar-input'
-import dayjs from 'dayjs'
+import UpcomingBatches from '@/components/admin/upcoming-batches'
+import { useEffect, useState } from 'react'
+import { clientFetch } from '@/utils/client-fetch'
 import { totalPayment as totalPay } from '@/lib/utils'
+import dayjs from 'dayjs'
 
 function AdminHomePage() {
     const [from, setFrom] = useState(dayjs(new Date()).format("DD-MM-YYYY"))
@@ -29,7 +30,7 @@ function AdminHomePage() {
                 }
                 const students = await clientFetch('students', filter)
                 const admission = await clientFetch('admission', filter)
-                const batches = await clientFetch('batches', filter)
+                const batches = await clientFetch('batches', { to: to.split("-").reverse().join("-") })
                 const expenses = await clientFetch("expenses", filter)
                 const payment = await paymentReducer(admission?.admission)
                 const dues = await dueReducer(admission?.admission, payment)
@@ -230,6 +231,25 @@ function AdminHomePage() {
                             </Box>
                             <Text>Total Expenses</Text>
                             <Text textStyle="2xl" color="orange.600">{totalExpense} Tk</Text>
+                        </Card.Body>
+                    </Card.Root>
+                </GridItem>
+            </Grid>
+            <Grid
+                templateColumns={{
+                    base: "1fr",
+                    md: "repeat(2, 1fr)"
+                }}
+                gap="5"
+                mt={5}
+            >
+                <GridItem>
+                    <Card.Root size="sm" rounded="xl" shadow="xs">
+                        <Card.Header>
+                            <Heading>Upcoming Batches</Heading>
+                        </Card.Header>
+                        <Card.Body>
+                            <UpcomingBatches />
                         </Card.Body>
                     </Card.Root>
                 </GridItem>
