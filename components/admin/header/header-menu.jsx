@@ -1,11 +1,11 @@
-import { useSession, signOut } from "next-auth/react"
+import { signOut } from "next-auth/react"
+import useLoggedUser from "@/hooks/useLoggedUser"
 import { Avatar, Icon, Menu, Portal } from "@chakra-ui/react"
 import { LuLogOut, LuSettings, LuUser } from "react-icons/lu"
 import Link from "next/link"
 
 export default function AvatarMenu() {
-    const { data: session } = useSession()
-    const user = session?.user;
+    const { user } = useLoggedUser()
 
     const avatar = user?.avatar && `${process.env.NEXT_PUBLIC_API_URL}/upload/${user.avatar}`;
     return (

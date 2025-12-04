@@ -1,15 +1,19 @@
 "use client"
 
-import { Box, Text, Flex, Grid, GridItem, Card, Icon, Heading } from '@chakra-ui/react'
+import { Box, Text, Flex, Grid, GridItem, Card, Icon, Heading, Alert, Badge } from '@chakra-ui/react'
 import { LuDollarSign, LuGraduationCap, LuLandmark, LuLayers, LuNotebookText } from 'react-icons/lu'
 import CalendarInput from '@/components/admin/calendar-input'
 import UpcomingBatches from '@/components/admin/upcoming-batches'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation';
 import { clientFetch } from '@/utils/client-fetch'
 import { totalPayment as totalPay } from '@/lib/utils'
 import dayjs from 'dayjs'
+import useLoggedUser from '@/hooks/useLoggedUser'
 
 function AdminHomePage() {
+    const { user } = useLoggedUser()
+
     const [from, setFrom] = useState(dayjs(new Date()).format("DD-MM-YYYY"))
     const [to, setTo] = useState(dayjs(new Date()).format("DD-MM-YYYY"))
 
@@ -49,8 +53,27 @@ function AdminHomePage() {
         fetchData()
     }, [from, to])
 
+    const router = useRouter();
+    const handleNavigation = () => {
+        router.push('/admin/settings#authentication');
+    };
+
     return (
         <Box>
+            {!user?.is2FAEnabled && (
+                <Alert.Root status="warning">
+                    <Alert.Indicator />
+                    <Alert.Title>
+                        Use 2FA security to provide maximum security to your account!
+                    </Alert.Title>
+                    <Badge
+                        variant="solid"
+                        size="md"
+                        cursor="pointer"
+                        onClick={handleNavigation}
+                    >Activate 2FA</Badge>
+                </Alert.Root>
+            )}
             <Flex
                 w="full"
                 direction={{ base: "column", md: "row" }}

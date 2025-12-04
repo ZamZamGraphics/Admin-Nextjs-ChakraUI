@@ -8,9 +8,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             credentials: {},
             async authorize(credentials) {
                 if (!credentials?.accessToken) return null;
-                const userInfo = JSON.parse(credentials.userInfo)
+                const userid = credentials.userid
                 return {
-                    userInfo,
+                    userid,
                     accessToken: credentials.accessToken
                 };
             },
@@ -25,7 +25,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     callbacks: {
         async jwt({ token, user }) {
             if (user?.accessToken) {
-                token.user = user.userInfo;
+                token.userid = user.userid;
                 token.accessToken = user.accessToken;
             }
             return token
@@ -33,7 +33,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         async session({ session, token }) {
             if (token?.accessToken) {
                 session.accessToken = token.accessToken;
-                session.user = token.user;
+                session.userid = token.userid;
             }
             return session
         },

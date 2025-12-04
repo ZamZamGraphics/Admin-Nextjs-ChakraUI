@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import SidebarItem from "./sidebar-item";
 
-function SidebarItemCollapse({ item }) {
+function SidebarItemCollapse({ item, closeDrawer }) {
     const pathname = usePathname()
     const [openItems, setOpenItems] = useState([])
 
@@ -58,13 +58,13 @@ function SidebarItemCollapse({ item }) {
                                 <SidebarItemCollapse
                                     item={route}
                                     key={index}
-                                //   handleDrawerToggle={handleDrawerToggle}
+                                    closeDrawer={closeDrawer}
                                 />
                             ) : (
                                 <SidebarItem
                                     item={route}
                                     key={index}
-                                //   handleDrawerToggle={handleDrawerToggle}
+                                    closeDrawer={closeDrawer}
                                 />
                             )
                         ) : null

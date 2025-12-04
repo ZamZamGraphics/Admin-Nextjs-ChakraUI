@@ -4,7 +4,7 @@ import { Box } from "@chakra-ui/react"
 import SidebarItemCollapse from "./sidebar-item-collapse"
 import SidebarItem from "./sidebar-item"
 
-function Sidebar() {
+function Sidebar({ closeDrawer }) {
     return (
         <Box h="100vh" overflowY="auto">
             <Box py={4}>
@@ -16,13 +16,13 @@ function Sidebar() {
                         <SidebarItemCollapse
                             item={route}
                             key={index}
-                        //   handleDrawerToggle={handleDrawerToggle}
+                            closeDrawer={closeDrawer}
                         />
                     ) : (
                         <SidebarItem
                             item={route}
                             key={index}
-                        //   handleDrawerToggle={handleDrawerToggle}
+                            closeDrawer={closeDrawer}
                         />
                     )
                 ) : null

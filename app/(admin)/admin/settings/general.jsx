@@ -3,22 +3,50 @@
 import { useColorMode } from "@/components/ui/color-mode"
 import { Alert, Box, Button, Grid, GridItem, NumberInput, Text } from "@chakra-ui/react"
 import { Switch } from "@chakra-ui/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useFormStatus } from "react-dom"
 import { updateSettings } from "@/app/actions/settings"
+import { clientFetch } from "@/utils/client-fetch"
 
-function SettingsPages({ initial }) {
+function GeneralSettings() {
+    const [id, setId] = useState(null)
     const { pending } = useFormStatus()
     const [success, setSuccess] = useState("")
     const [error, setError] = useState("")
     const { toggleColorMode } = useColorMode()
 
-    const [settings, setSettings] = useState({
-        emailChecked: initial?.emailChecked,
-        smsChecked: initial?.smsChecked,
-        darkMode: initial?.darkMode,
-        perPage: initial?.perPage
-    })
+    const [emailChecked, setEmailChecked] = useState(false)
+    const [smsChecked, setSMSChecked] = useState(false)
+    const [darkMode, setDarkMode] = useState(true)
+    const [perPage, setPerPage] = useState(5)
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const res = await clientFetch("settings")
+                setId(res._id)
+                setEmailChecked(res.emailChecked)
+                setSMSChecked(res.smsChecked)
+                setDarkMode(res.darkMode)
+                setPerPage(res.perPage)
+            } catch (err) {
+                setError({ message: err?.message })
+            }
+        }
+        fetchSettings()
+    }, [])
+
+    const handleColorMode = async (e) => {
+        toggleColorMode()
+        setDarkMode(e.checked)
+        const formData = {
+            emailChecked,
+            smsChecked,
+            perPage,
+            darkMode: e.checked
+        }
+        await updateSettings(id, formData)
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -26,12 +54,18 @@ function SettingsPages({ initial }) {
         setSuccess("")
 
         try {
-            const res = await updateSettings(initial?._id, settings)
+            const formData = {
+                emailChecked,
+                smsChecked,
+                darkMode,
+                perPage
+            }
+            const res = await updateSettings(id, formData)
             window.scrollTo({ top: 0, behavior: 'smooth' });
             if (res?.success) setSuccess({ message: res.message })
             if (res?.errors) setError({ message: res.errors?.perPage?.msg })
         } catch (err) {
-            setError({ message: err.message });
+            setError({ message: err?.message });
         }
     }
 
@@ -43,7 +77,6 @@ function SettingsPages({ initial }) {
                     <Alert.Title>{success?.message}</Alert.Title>
                 </Alert.Root>
             }
-
             {error?.message &&
                 <Alert.Root status="error" mb={5}>
                     <Alert.Indicator />
@@ -65,13 +98,10 @@ function SettingsPages({ initial }) {
                     <GridItem spaceY={{ base: 1, md: 5 }}>
                         <Box>
                             <Switch.Root
-                                checked={settings.emailChecked}
-                                onCheckedChange={(e) => {
-                                    setSettings((prev) => ({
-                                        ...prev,
-                                        emailChecked: e.checked,
-                                    }));
-                                }}
+                                name="emailChecked"
+                                value={emailChecked}
+                                checked={emailChecked}
+                                onCheckedChange={(e) => setEmailChecked(e.checked)}
                             >
                                 <Switch.HiddenInput />
                                 <Switch.Control>
@@ -82,13 +112,10 @@ function SettingsPages({ initial }) {
                         </Box>
                         <Box>
                             <Switch.Root
-                                checked={settings.smsChecked}
-                                onCheckedChange={(e) => {
-                                    setSettings((prev) => ({
-                                        ...prev,
-                                        smsChecked: e.checked,
-                                    }));
-                                }}
+                                name="smsChecked"
+                                value={smsChecked}
+                                checked={smsChecked}
+                                onCheckedChange={(e) => setSMSChecked(e.checked)}
                             >
                                 <Switch.HiddenInput />
                                 <Switch.Control>
@@ -106,14 +133,10 @@ function SettingsPages({ initial }) {
                     </GridItem>
                     <GridItem>
                         <Switch.Root
-                            checked={settings.darkMode}
-                            onCheckedChange={(e) => {
-                                toggleColorMode()
-                                setSettings((prev) => ({
-                                    ...prev,
-                                    darkMode: e.checked,
-                                }));
-                            }}
+                            name="darkMode"
+                            value={darkMode}
+                            checked={darkMode}
+                            onCheckedChange={(e) => handleColorMode(e)}
                         >
                             <Switch.HiddenInput />
                             <Switch.Control>
@@ -136,13 +159,9 @@ function SettingsPages({ initial }) {
                             max={100}
                             step={10}
                             bg="bg"
-                            value={settings.perPage}
-                            onValueChange={(e) => {
-                                setSettings((prev) => ({
-                                    ...prev,
-                                    perPage: e.value,
-                                }));
-                            }}
+                            name="perPage"
+                            value={perPage}
+                            onValueChange={(e) => setPerPage(e.value)}
                         >
                             <NumberInput.Control />
                             <NumberInput.Input />
@@ -161,4 +180,4 @@ function SettingsPages({ initial }) {
     )
 }
 
-export default SettingsPages
+export default GeneralSettings

@@ -24,6 +24,8 @@ function AdminLayout({ children, auth }) {
     const sidebarWidth = "240px"
     const headerHeight = "64px"
 
+    const closeDrawer = () => setOpen(false)
+
     return (
         <Flex h="full" flexDirection="row">
             <Box
@@ -50,7 +52,7 @@ function AdminLayout({ children, auth }) {
                     <Drawer.Positioner>
                         <Drawer.Content>
                             <Drawer.Body>
-                                <Sidebar />
+                                <Sidebar closeDrawer={closeDrawer} />
                             </Drawer.Body>
                             <Drawer.CloseTrigger asChild>
                                 <CloseButton size="sm" />

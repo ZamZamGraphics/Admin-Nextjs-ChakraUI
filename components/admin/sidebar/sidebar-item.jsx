@@ -4,7 +4,7 @@ import { Icon, Box } from "@chakra-ui/react"
 import { usePathname } from "next/navigation"
 import Link from 'next/link';
 
-function SidebarItem({ item }) {
+function SidebarItem({ item, closeDrawer }) {
     const pathname = usePathname()
 
     const color = pathname === item.path ? "green.fg" : "fg.muted"
@@ -23,8 +23,7 @@ function SidebarItem({ item }) {
             <Link
                 className="flex gap-3 items-center"
                 href={item.path}
-            //   onClick={handleDrawerToggle}
-            //   selected={pathname === item.path && true}
+                onClick={closeDrawer}
             >
                 {item.icon &&
                     <Icon>{item.icon}</Icon>
