@@ -5,12 +5,11 @@ import GeneralSettings from "./general"
 import Authentication from "./authentication"
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from 'next/navigation';
-import useLoggedUser from "@/hooks/useLoggedUser"
+import Trusted from "./trusted";
 
 function SettingsPage() {
     const router = useRouter();
     const pathname = usePathname();
-    const { user } = useLoggedUser()
     const [value, setValue] = useState('general')
 
     const handleTabChange = (value) => {
@@ -38,10 +37,10 @@ function SettingsPage() {
                 <GeneralSettings />
             </Tabs.Content>
             <Tabs.Content value="authentication">
-                <Authentication is2FAEnabled={user?.is2FAEnabled} />
+                <Authentication />
             </Tabs.Content>
             <Tabs.Content value="trusted">
-                <Authentication is2FAEnabled={user?.is2FAEnabled} />
+                <Trusted />
             </Tabs.Content>
         </Tabs.Root>
     )

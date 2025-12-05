@@ -1,45 +1,40 @@
 import { useSession } from "next-auth/react"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 function useLoggedUser() {
     const { data: session } = useSession()
-
-    const [userId, setUserId] = useState(null)
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
 
-    useEffect(() => {
-        if (session?.userid) {
-            setUserId(session.userid)
-        }
-    }, [session])
+    const userId = session?.userid;
 
-    useEffect(() => {
-        if (!userId) {
+    const fetchUser = useCallback(async () => {
+        if (!userId) return;
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            const res = await fetch(`/api/users/${userId}`, {
+                cache: "no-store",
+            })
+            if (!res.ok) throw new Error("Failed to fetch logged user")
+
+            const data = await res.json()
+            setUser(data)
+        } catch (err) {
+            setError(err.message)
+        } finally {
             setLoading(false)
-            return
         }
+    }, [userId]);
 
-        const fetchUser = async () => {
-            try {
-                setLoading(true)
-                const res = await fetch(`/api/users/${userId}`)
-                if (!res.ok) throw new Error("Failed to fetch logged user")
+    useEffect(() => {
+        if (userId) fetchUser()
+    }, [userId, fetchUser])
 
-                const data = await res.json()
-                setUser(data)
-            } catch (err) {
-                setError(err.message)
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        fetchUser()
-    }, [userId])
-
-    return { session, userId, user, loading, error }
+    return { user, loading, error, refresh: fetchUser }
 }
 
 export default useLoggedUser

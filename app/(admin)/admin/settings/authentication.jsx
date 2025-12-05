@@ -2,10 +2,13 @@
 
 import { setup2FA, confirm2FASetup, disable2FA } from "@/app/actions/settings"
 import { PasswordInput } from "@/components/ui/password-input"
+import useLoggedUser from "@/hooks/useLoggedUser"
 import { Alert, Box, Button, CloseButton, Dialog, Portal, Grid, GridItem, QrCode, Text, Stack, Field, Input } from "@chakra-ui/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
-function Authentication({ is2FAEnabled }) {
+function Authentication() {
+    const { user, refresh } = useLoggedUser()
+    const [is2FAEnabled, set2FAEnabled] = useState(null)
     const [open, setOpen] = useState(false)
     const [qrImaage, setQRImage] = useState(null)
     const [secret, setSecret] = useState(null)
@@ -15,18 +18,19 @@ function Authentication({ is2FAEnabled }) {
     const [success, setSuccess] = useState("")
     const [error, setError] = useState("")
 
+    useEffect(() => {
+        if (user) set2FAEnabled(user.is2FAEnabled)
+    }, [user])
+
     const handleEnable2FA = async () => {
         setError("")
         setSuccess("")
         try {
             const res = await setup2FA()
-
-            console.log('Generated Secret: ', res?.secret)
-
             if (res?.success) {
                 setQRImage(res?.otpauth_url)
                 setSecret(res?.secret)
-                setSuccess(res?.message)
+                setSuccess({ message: res?.message })
             }
             if (res?.errors) setError({ message: res.errors?.message })
         } catch (err) {
@@ -40,12 +44,10 @@ function Authentication({ is2FAEnabled }) {
         setSuccess("")
         try {
             const res = await confirm2FASetup(token)
-
-            console.log("DB Secret : ", res)
-
             if (res?.success) {
+                refresh()
                 setOpen(false)
-                setSuccess(res?.message)
+                setSuccess({ message: res?.message })
             }
             if (res?.errors) setError({ message: res.errors?.message })
         } catch (err) {
@@ -59,8 +61,9 @@ function Authentication({ is2FAEnabled }) {
         try {
             const res = await disable2FA(password)
             if (res?.success) {
+                refresh()
                 setOpen(false)
-                setSuccess(res?.message)
+                setSuccess({ message: res?.message })
             }
             if (res?.errors) setError({ message: res.errors?.message })
         } catch (err) {
