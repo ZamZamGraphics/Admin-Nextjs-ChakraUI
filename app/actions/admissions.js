@@ -21,6 +21,7 @@ export async function addAdmission(formData) {
             revalidateTag('admissions')
             revalidateTag('admission')
             revalidateTag('students')
+            revalidateTag('sms-balance')
             return {
                 success: true,
                 ...data
@@ -51,6 +52,7 @@ export async function addPayment(formData) {
             revalidateTag('admissions')
             revalidateTag('admission')
             revalidateTag('students')
+            revalidateTag('sms-balance')
             return {
                 success: true,
                 ...data
