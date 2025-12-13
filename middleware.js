@@ -6,7 +6,9 @@ export default auth(async (req) => {
     const token = req.auth?.accessToken || null
     const privateRoute = ["/admin", "/invoice"];
 
-    if (pathname === "/") return NextResponse.redirect(new URL("/admin", req.url))
+    if (pathname === "/") {
+        return NextResponse.redirect(new URL("/admin", req.url))
+    }
 
     if (privateRoute.some(route => pathname.startsWith(route))) {
         if (!token) return NextResponse.redirect(new URL("/login", req.url))

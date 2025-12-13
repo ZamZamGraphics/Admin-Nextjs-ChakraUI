@@ -7,8 +7,8 @@ import { serverFetchById } from "@/utils";
 async function page() {
     try {
         const session = await auth();
-        const { userid } = session.user
-        const user = await serverFetchById('users', userid)
+        const userId = session.userid
+        const user = await serverFetchById('users', userId)
         return (
             <Suspense fallback="Loading User Profile...">
                 <EditUser userInfo={user} />
