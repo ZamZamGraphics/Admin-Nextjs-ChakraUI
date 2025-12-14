@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { Button, HStack } from "@chakra-ui/react"
 import { ColorModeButton } from "@/components/ui/color-mode";
 import Link from "next/link";

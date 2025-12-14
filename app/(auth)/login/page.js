@@ -1,5 +1,5 @@
 "use client"
-
+export const dynamic = 'force-dynamic';
 import { useState, useEffect } from "react"
 import { Center, Card, Field, Input, Stack, Button, Alert, InputGroup } from "@chakra-ui/react"
 import Link from "next/link"
