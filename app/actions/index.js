@@ -1,13 +1,13 @@
-"use server"
 
 export async function credentialLogin({ username, password, userAgent }) {
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/auth/login`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/v2/auth/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "User-Agent": userAgent || "Unknown",
             },
+            credentials: 'include',
             body: JSON.stringify({ username, password }),
         })
 
@@ -34,12 +34,13 @@ export async function verifyOTP({ userid, token, deviceId, userAgent }) {
     }
 
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/auth/2fa/login`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/v2/auth/2fa/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "User-Agent": userAgent || "unknown",
             },
+            credentials: 'include',
             body: JSON.stringify({ userid, token, deviceId }),
         })
 
