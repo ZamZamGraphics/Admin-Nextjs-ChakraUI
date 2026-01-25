@@ -57,23 +57,25 @@ function AdminHomePage() {
     const handleNavigation = () => {
         router.push('/admin/settings#authentication');
     };
+    let securityAlert = null;
+    if (!user?.is2FAEnabled) {
+        securityAlert = <Alert.Root status="warning">
+            <Alert.Indicator />
+            <Alert.Title>
+                Use 2FA security to provide maximum security to your account!
+            </Alert.Title>
+            <Badge
+                variant="solid"
+                size="md"
+                cursor="pointer"
+                onClick={handleNavigation}
+            >Activate 2FA</Badge>
+        </Alert.Root>
+    }
 
     return (
         <Box>
-            {!user?.is2FAEnabled && (
-                <Alert.Root status="warning">
-                    <Alert.Indicator />
-                    <Alert.Title>
-                        Use 2FA security to provide maximum security to your account!
-                    </Alert.Title>
-                    <Badge
-                        variant="solid"
-                        size="md"
-                        cursor="pointer"
-                        onClick={handleNavigation}
-                    >Activate 2FA</Badge>
-                </Alert.Root>
-            )}
+            {securityAlert}
             <Flex
                 w="full"
                 direction={{ base: "column", md: "row" }}
