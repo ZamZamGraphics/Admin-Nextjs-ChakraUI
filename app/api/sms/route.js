@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 export async function POST(req) {
     const session = await auth()
     const token = session?.accessToken
-    // const { number, status, message } = req.body; পাঠাতে হবে
     try {
         const body = await req.json();
         const response = await fetch(`${process.env.API_URL}/v2/messages/sms`, {
@@ -20,7 +19,7 @@ export async function POST(req) {
         const data = await response.json();
         revalidateTag('sms-balance')
 
-        return NextResponse.json(data, { status: res.status })
+        return NextResponse.json(data)
     } catch (err) {
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
     }

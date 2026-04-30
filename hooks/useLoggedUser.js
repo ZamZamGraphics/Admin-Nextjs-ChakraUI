@@ -2,7 +2,7 @@ import { useSession } from "next-auth/react"
 import { useCallback, useEffect, useState } from "react"
 
 function useLoggedUser() {
-    const { data: session } = useSession()
+    const { data: session, status } = useSession()
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -31,8 +31,9 @@ function useLoggedUser() {
     }, [userId]);
 
     useEffect(() => {
+        if (status === "loading") setLoading(true)
         if (userId) fetchUser()
-    }, [userId, fetchUser])
+    }, [userId, fetchUser, status])
 
     return { user, loading, error, refresh: fetchUser }
 }

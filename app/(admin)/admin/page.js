@@ -1,7 +1,7 @@
 "use client"
 
 import { Box, Text, Flex, Grid, GridItem, Card, Icon, Heading, Alert, Badge } from '@chakra-ui/react'
-import { LuDollarSign, LuGraduationCap, LuLandmark, LuLayers, LuNotebookText } from 'react-icons/lu'
+import { LuDollarSign, LuGraduationCap, LuLandmark, LuLayers, LuMessageCircle, LuNotebookText } from 'react-icons/lu'
 import CalendarInput from '@/components/admin/calendar-input'
 import UpcomingBatches from '@/components/admin/upcoming-batches'
 import { useEffect, useState } from 'react'
@@ -12,7 +12,7 @@ import dayjs from 'dayjs'
 import useLoggedUser from '@/hooks/useLoggedUser'
 
 function AdminHomePage() {
-    const { user } = useLoggedUser()
+    const { loading, user } = useLoggedUser()
 
     const [from, setFrom] = useState(dayjs(new Date()).format("DD-MM-YYYY"))
     const [to, setTo] = useState(dayjs(new Date()).format("DD-MM-YYYY"))
@@ -23,6 +23,20 @@ function AdminHomePage() {
     const [totalPayment, setTotalPayment] = useState(0)
     const [totalDues, setTotalDues] = useState(0)
     const [totalExpense, setTotalExpense] = useState(0)
+    const [smsBalance, setSMSBalance] = useState(0)
+
+    useEffect(() => {
+        const getBalance = async () => {
+            try {
+                const res = await fetch('/api/sms/balance')
+                const data = await res.json();
+                setSMSBalance(data?.balance.toFixed(2))
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        getBalance()
+    }, [])
 
     useEffect(() => {
         async function fetchData() {
@@ -53,29 +67,9 @@ function AdminHomePage() {
         fetchData()
     }, [from, to])
 
-    const router = useRouter();
-    const handleNavigation = () => {
-        router.push('/admin/settings#authentication');
-    };
-    let securityAlert = null;
-    if (!user?.is2FAEnabled) {
-        securityAlert = <Alert.Root status="warning">
-            <Alert.Indicator />
-            <Alert.Title>
-                Use 2FA security to provide maximum security to your account!
-            </Alert.Title>
-            <Badge
-                variant="solid"
-                size="md"
-                cursor="pointer"
-                onClick={handleNavigation}
-            >Activate 2FA</Badge>
-        </Alert.Root>
-    }
-
     return (
         <Box>
-            {securityAlert}
+            {!loading && <SecurityAlert is2FAEnabled={user?.is2FAEnabled} />}
             <Flex
                 w="full"
                 direction={{ base: "column", md: "row" }}
@@ -111,7 +105,6 @@ function AdminHomePage() {
                     base: "repeat(2, 1fr)",
                     sm: "repeat(3, 1fr)",
                     md: "repeat(4, 1fr)",
-                    lg: "repeat(6, 1fr)",
                 }}
                 gap="5"
             >
@@ -207,7 +200,7 @@ function AdminHomePage() {
                                 </Icon>
                             </Box>
                             <Text>Total Payment</Text>
-                            <Text textStyle="2xl" color="green.600">{totalPayment} Tk</Text>
+                            <Text textStyle="2xl" color="green.600">BDT {totalPayment}</Text>
                         </Card.Body>
                     </Card.Root>
                 </GridItem>
@@ -231,7 +224,7 @@ function AdminHomePage() {
                                 </Icon>
                             </Box>
                             <Text>Total Dues</Text>
-                            <Text textStyle="2xl" color="red.600">{totalDues} Tk</Text>
+                            <Text textStyle="2xl" color="red.600">BDT {totalDues}</Text>
                         </Card.Body>
                     </Card.Root>
                 </GridItem>
@@ -255,7 +248,31 @@ function AdminHomePage() {
                                 </Icon>
                             </Box>
                             <Text>Total Expenses</Text>
-                            <Text textStyle="2xl" color="orange.600">{totalExpense} Tk</Text>
+                            <Text textStyle="2xl" color="orange.600">BDT {totalExpense}</Text>
+                        </Card.Body>
+                    </Card.Root>
+                </GridItem>
+                <GridItem>
+                    <Card.Root rounded="xl" shadow="xs">
+                        <Card.Body
+                            textStyle="lg"
+                            fontWeight="bold"
+                            textAlign="center"
+                            alignItems="center"
+                            gap={3}
+                        >
+                            <Box
+                                color="green.600"
+                                bg="green.100"
+                                p={2}
+                                rounded="xl"
+                            >
+                                <Icon size="xl">
+                                    <LuMessageCircle />
+                                </Icon>
+                            </Box>
+                            <Text>SMS Balance</Text>
+                            <Text textStyle="2xl" color="green.600">BDT {smsBalance}</Text>
                         </Card.Body>
                     </Card.Root>
                 </GridItem>
@@ -284,6 +301,30 @@ function AdminHomePage() {
 }
 
 export default AdminHomePage
+
+function SecurityAlert({ is2FAEnabled }) {
+    const router = useRouter();
+
+    const handleNavigation = () => {
+        router.push('/admin/settings#authentication');
+    };
+
+    if (is2FAEnabled) return;
+    return (
+        <Alert.Root status="warning" mb={5}>
+            <Alert.Indicator />
+            <Alert.Title>
+                Use 2FA security to provide maximum security to your account!
+            </Alert.Title>
+            <Badge
+                variant="solid"
+                size="md"
+                cursor="pointer"
+                onClick={handleNavigation}
+            >Activate 2FA</Badge>
+        </Alert.Root>
+    )
+}
 
 async function paymentReducer(admission) {
     if (admission?.length > 0) {
