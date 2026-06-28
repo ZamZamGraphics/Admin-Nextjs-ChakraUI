@@ -4,14 +4,13 @@ import { useState } from "react"
 import { useFormStatus } from "react-dom";
 import CalendarInput from "@/components/admin/calendar-input";
 import { Alert, Avatar, Box, Button, createListCollection, Field, Flex, Grid, GridItem, HStack, Input, Portal, RadioGroup, Select, Text } from "@chakra-ui/react"
-import { addEmployee, updateEmployee } from "@/app/actions/employee";
+import { updateEmployee } from "@/app/actions/employee";
 import { parseDate } from "@/lib/utils";
-import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 
 function EditEmployee({ employeeInfo }) {
     const { pending } = useFormStatus();
-    const avatarURL = employeeInfo?.avatar && `${process.env.NEXT_PUBLIC_API_URL}/upload/${employeeInfo?.avatar}`;
+    const avatarURL = employeeInfo?.avatar && `${process.env.NEXT_PUBLIC_IMAGE_URL}/${employeeInfo?.avatar}`;
     const [avatar, setAvatar] = useState(employeeInfo?.avatar);
     const [avatarImage, setAvatarImage] = useState(avatarURL);
     const [success, setSuccess] = useState("")
@@ -33,8 +32,6 @@ function EditEmployee({ employeeInfo }) {
         education: employeeInfo?.education,
         status: [employeeInfo?.status],
     })
-
-    const router = useRouter()
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -78,8 +75,9 @@ function EditEmployee({ employeeInfo }) {
             const response = await updateEmployee(employeeInfo?._id, formData);
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            if (response?.success) setSuccess({ message: response?.message })
+            if (!response?.success) setError({ message: response?.message })
             if (response?.errors) setError({ ...response?.errors })
+            if (response?.success) setSuccess({ message: response?.message })
 
         } catch (e) {
             setError({ message: e.message });

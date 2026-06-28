@@ -14,7 +14,7 @@ function UserComponent({ data }) {
                                 <Flex align="center" gap={3} cursor="pointer">
                                     <Avatar.Root>
                                         <Avatar.Fallback name={user?.fullname} />
-                                        <Avatar.Image src={user?.avatar && `${process.env.NEXT_PUBLIC_API_URL}/upload/${user.avatar}`} />
+                                        <Avatar.Image src={user?.avatar && `${process.env.NEXT_PUBLIC_IMAGE_URL}/${user.avatar}`} />
                                     </Avatar.Root>
                                     <Text fontWeight="semibold">
                                         {user?.fullname}

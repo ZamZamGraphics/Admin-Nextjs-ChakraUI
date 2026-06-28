@@ -8,7 +8,7 @@ import { updateUser } from "@/app/actions/users";
 
 function EditUser({ userInfo }) {
     const { pending } = useFormStatus();
-    const avatarURL = userInfo?.avatar && `${process.env.NEXT_PUBLIC_API_URL}/upload/${userInfo?.avatar}`;
+    const avatarURL = userInfo?.avatar && `${process.env.NEXT_PUBLIC_IMAGE_URL}/${userInfo?.avatar}`;
     const [avatar, setAvatar] = useState(userInfo?.avatar);
     const [avatarImage, setAvatarImage] = useState(avatarURL);
     const [success, setSuccess] = useState("")
@@ -58,12 +58,16 @@ function EditUser({ userInfo }) {
             const response = await updateUser(userInfo?._id, formData);
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            if (response?.success) {
-                setSuccess({ message: response?.message });
+            if (!response?.success) {
+                setError({ message: response?.message });
             }
 
             if (response?.errors) {
                 setError({ ...response?.errors });
+            }
+
+            if (response?.success) {
+                setSuccess({ message: response?.message });
             }
         } catch (e) {
             setError({ message: e.message });

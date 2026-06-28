@@ -82,12 +82,16 @@ function NewStudentPage() {
             const response = await addStudent(formData);
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            if (response?.success) {
-                router.push(`/admin/admission/new?studentId=${response.studentId}`)
+            if (!response?.success) {
+                setError({ message: response?.message })
             }
 
             if (response?.errors) {
                 setError({ ...response?.errors });
+            }
+
+            if (response?.success) {
+                router.push(`/admin/admission/new?studentId=${response.studentId}`)
             }
         } catch (e) {
             setError({ message: e.message });

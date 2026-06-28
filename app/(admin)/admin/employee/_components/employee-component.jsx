@@ -14,7 +14,7 @@ function EmployeeComponent({ data }) {
                                 <Flex align="center" gap={3} cursor="pointer">
                                     <Avatar.Root>
                                         <Avatar.Fallback name={employee?.fullName} />
-                                        <Avatar.Image src={employee?.avatar && `${process.env.NEXT_PUBLIC_API_URL}/upload/${employee.avatar}`} />
+                                        <Avatar.Image src={employee?.avatar && `${process.env.NEXT_PUBLIC_IMAGE_URL}/${employee.avatar}`} />
                                     </Avatar.Root>
                                     <Text fontWeight="semibold">
                                         {employee?.fullName}

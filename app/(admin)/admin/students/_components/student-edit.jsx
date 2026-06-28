@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 
 function EditStudent({ std }) {
     const { pending } = useFormStatus();
-    const avatarURL = std?.avatar && `${process.env.NEXT_PUBLIC_API_URL}/upload/${std?.avatar}`;
+    const avatarURL = std?.avatar && `${process.env.NEXT_PUBLIC_IMAGE_URL}/${std?.avatar}`;
     const [avatar, setAvatar] = useState(std?.avatar);
     const [avatarImage, setAvatarImage] = useState(avatarURL);
     const [success, setSuccess] = useState("")
@@ -82,10 +82,15 @@ function EditStudent({ std }) {
             formData.append("status", std?.status);
 
             const response = await updateStudent(std._id, formData);
+            console.log(response)
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
             if (response?.success) {
                 setSuccess({ message: response?.message })
+            }
+
+            if (!response?.success) {
+                setError({ message: response?.message })
             }
 
             if (response?.errors) {

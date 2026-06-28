@@ -57,12 +57,16 @@ function NewUserPage() {
             const response = await addUser(formData);
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            if (response?.success) {
-                setSuccess({ message: response?.message });
+            if (!response?.success) {
+                setError({ message: response?.message });
             }
 
             if (response?.errors) {
                 setError({ ...response?.errors });
+            }
+
+            if (response?.success) {
+                setSuccess({ message: response?.message });
             }
         } catch (e) {
             setError({ message: e.message });

@@ -73,8 +73,9 @@ function NewEmployeePage() {
             const response = await addEmployee(formData);
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            if (response?.success) router.push(`/admin/employee`)
+            if (!response?.success) setError({ message: response?.message })
             if (response?.errors) setError({ ...response?.errors })
+            if (response?.success) router.push(`/admin/employee`)
 
         } catch (e) {
             setError({ message: e.message });
