@@ -33,6 +33,8 @@ export default function LoginPage() {
         try {
             const response = await credentialLogin({ username, password, userAgent: ua })
 
+            if (!response?.success) setError({ message: response?.message })
+
             if (response?.require2FA) {
                 setUserid(response.userid)
                 setDeviceId(response.deviceId)
@@ -65,6 +67,8 @@ export default function LoginPage() {
 
         try {
             const response = await verifyOTP({ userid, token: otp, deviceId, userAgent: ua })
+
+            if (!response?.success) setError({ message: response?.message })
 
             if (response?.success) {
                 await signIn("credentials", {
