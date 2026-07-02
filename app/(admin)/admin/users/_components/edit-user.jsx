@@ -5,10 +5,11 @@ import { useFormStatus } from "react-dom";
 import { Alert, Avatar, Box, Button, createListCollection, Field, Flex, Grid, GridItem, Input, Portal, Select, Text } from "@chakra-ui/react"
 import { PasswordInput } from "@/components/ui/password-input";
 import { updateUser } from "@/app/actions/users";
+import { getImageUrl } from "@/utils/getImageUrl";
 
 function EditUser({ userInfo }) {
     const { pending } = useFormStatus();
-    const avatarURL = userInfo?.avatar && `${process.env.NEXT_PUBLIC_IMAGE_URL}/${userInfo?.avatar}`;
+    const avatarURL = getImageUrl(userInfo?.avatar);
     const [avatar, setAvatar] = useState(userInfo?.avatar);
     const [avatarImage, setAvatarImage] = useState(avatarURL);
     const [success, setSuccess] = useState("")

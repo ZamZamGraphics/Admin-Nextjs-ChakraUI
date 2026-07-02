@@ -1,9 +1,10 @@
 import { Avatar, CloseButton, Dialog, Flex, Portal, Table, Text } from "@chakra-ui/react"
 import Status from "@/components/admin/status"
 import dayjs from 'dayjs';
+import { getImageUrl } from "@/utils/getImageUrl";
 
 function EmployeeDialog({ employee }) {
-    const avatar = employee?.avatar && `${process.env.NEXT_PUBLIC_IMAGE_URL}/${employee.avatar}`
+    const avatar = getImageUrl(employee?.avatar)
     return (
         <Portal>
             <Dialog.Backdrop />

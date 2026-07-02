@@ -2,6 +2,7 @@ import { Alert, Flex, Table, Text, Avatar, Dialog } from "@chakra-ui/react";
 import Status from "@/components/admin/status";
 import Action from "./action";
 import EmployeeDialog from "./employee-dialog";
+import { getImageUrl } from "@/utils/getImageUrl";
 
 function EmployeeComponent({ data }) {
     return (
@@ -14,7 +15,7 @@ function EmployeeComponent({ data }) {
                                 <Flex align="center" gap={3} cursor="pointer">
                                     <Avatar.Root>
                                         <Avatar.Fallback name={employee?.fullName} />
-                                        <Avatar.Image src={employee?.avatar && `${process.env.NEXT_PUBLIC_IMAGE_URL}/${employee.avatar}`} />
+                                        <Avatar.Image src={getImageUrl(employee?.avatar)} />
                                     </Avatar.Root>
                                     <Text fontWeight="semibold">
                                         {employee?.fullName}

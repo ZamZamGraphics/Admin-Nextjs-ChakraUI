@@ -8,10 +8,11 @@ import { updateStudent } from "@/app/actions/students";
 import { useState } from "react"
 import { useFormStatus } from "react-dom";
 import dayjs from "dayjs";
+import { getImageUrl } from "@/utils/getImageUrl";
 
 function EditStudent({ std }) {
     const { pending } = useFormStatus();
-    const avatarURL = std?.avatar && `${process.env.NEXT_PUBLIC_IMAGE_URL}/${std?.avatar}`;
+    const avatarURL = getImageUrl(std?.avatar);
     const [avatar, setAvatar] = useState(std?.avatar);
     const [avatarImage, setAvatarImage] = useState(avatarURL);
     const [success, setSuccess] = useState("")

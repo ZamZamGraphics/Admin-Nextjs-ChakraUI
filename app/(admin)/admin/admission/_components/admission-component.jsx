@@ -4,6 +4,7 @@ import AdmissionDue from "./admission-due";
 import Action from "./action";
 import Link from "next/link";
 import dayjs from 'dayjs';
+import { getImageUrl } from "@/utils/getImageUrl";
 
 function AdmissionComponent({ data }) {
     return (
@@ -24,7 +25,7 @@ function AdmissionComponent({ data }) {
                         >
                             <Avatar.Root>
                                 <Avatar.Fallback name={admission?.student?.fullName} />
-                                <Avatar.Image src={admission?.student?.avatar && `${process.env.NEXT_PUBLIC_IMAGE_URL}/${admission?.student.avatar}`} />
+                                <Avatar.Image src={getImageUrl(admission?.student.avatar)} />
                             </Avatar.Root>
                             <Text fontWeight="semibold">
                                 {admission?.student?.fullName}

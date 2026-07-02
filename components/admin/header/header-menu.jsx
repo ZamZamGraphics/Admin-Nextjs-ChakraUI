@@ -3,11 +3,12 @@ import useLoggedUser from "@/hooks/useLoggedUser"
 import { Avatar, Icon, Menu, Portal } from "@chakra-ui/react"
 import { LuLogOut, LuSettings, LuUser } from "react-icons/lu"
 import Link from "next/link"
+import { getImageUrl } from "@/utils/getImageUrl"
 
 export default function AvatarMenu() {
     const { user } = useLoggedUser()
 
-    const avatar = user?.avatar && `${process.env.NEXT_PUBLIC_API_URL}/upload/${user.avatar}`;
+    const avatar = getImageUrl(user?.avatar);
     return (
         <Menu.Root>
             <Menu.Trigger rounded="full" focusRing="outside">

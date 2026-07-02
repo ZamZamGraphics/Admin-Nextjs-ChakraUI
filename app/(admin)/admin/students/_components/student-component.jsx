@@ -2,6 +2,7 @@ import { Alert, Flex, Table, Text, Avatar, Dialog } from "@chakra-ui/react";
 import Status from "@/components/admin/status";
 import StudentDialog from "./student-dialog";
 import Action from "./action";
+import { getImageUrl } from "@/utils/getImageUrl";
 
 function StudentComponent({ data }) {
     return (
@@ -19,7 +20,7 @@ function StudentComponent({ data }) {
                                 <Flex align="center" gap={3} cursor="pointer">
                                     <Avatar.Root>
                                         <Avatar.Fallback name={std?.fullName} />
-                                        <Avatar.Image src={std?.avatar && `${process.env.NEXT_PUBLIC_IMAGE_URL}/${std.avatar}`} />
+                                        <Avatar.Image src={getImageUrl(std?.avatar)} />
                                     </Avatar.Root>
                                     <Text fontWeight="semibold">
                                         {std?.fullName}

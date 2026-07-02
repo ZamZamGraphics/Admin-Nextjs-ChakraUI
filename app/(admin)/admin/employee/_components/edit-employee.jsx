@@ -7,10 +7,11 @@ import { Alert, Avatar, Box, Button, createListCollection, Field, Flex, Grid, Gr
 import { updateEmployee } from "@/app/actions/employee";
 import { parseDate } from "@/lib/utils";
 import dayjs from "dayjs";
+import { getImageUrl } from "@/utils/getImageUrl";
 
 function EditEmployee({ employeeInfo }) {
     const { pending } = useFormStatus();
-    const avatarURL = employeeInfo?.avatar && `${process.env.NEXT_PUBLIC_IMAGE_URL}/${employeeInfo?.avatar}`;
+    const avatarURL = getImageUrl(employeeInfo?.avatar);
     const [avatar, setAvatar] = useState(employeeInfo?.avatar);
     const [avatarImage, setAvatarImage] = useState(avatarURL);
     const [success, setSuccess] = useState("")
