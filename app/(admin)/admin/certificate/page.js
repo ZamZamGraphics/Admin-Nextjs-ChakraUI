@@ -36,13 +36,14 @@ function CertificatePage() {
                 body: JSON.stringify({ batchNo, studentId }),
             })
             const result = await res.json();
-
+            console.log('[result]', result);
             if (!result?.success) {
                 setError({ message: result?.message });
             }
 
             if (result?.success) {
                 const { status } = result?.admission;
+                console.log('[status]', status);
                 if (status !== "Paid") {
                     setError({ message: "Please pay the due amount of course fees." })
                 } else {
