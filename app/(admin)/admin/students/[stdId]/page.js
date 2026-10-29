@@ -1,12 +1,13 @@
 import { Suspense } from "react";
 import { Alert } from "@chakra-ui/react";
-import { serverFetchById } from "@/utils";
 import EditStudent from "../_components/student-edit";
+import { apiFetch } from "@/utils/apiServer";
 
 async function page({ params }) {
     const { stdId } = await params;
     try {
-        const student = await serverFetchById('students', stdId)
+        const res = await apiFetch(`/v2/students/${stdId}`)
+        const student = await res.json();
         return (
             <Suspense fallback="Loading Edit Student...">
                 <EditStudent std={student} />

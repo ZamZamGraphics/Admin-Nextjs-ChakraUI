@@ -1,5 +1,6 @@
 "use client"
 
+import { api } from "@/utils/clientFetch";
 import { Alert, Box, Button, Card, Field, Flex, Grid, GridItem, Input, Text, createListCollection, Portal, Select, Textarea } from "@chakra-ui/react";
 import { useEffect, useState } from "react"
 
@@ -16,9 +17,9 @@ function MessagePage() {
     useEffect(() => {
         const getBalance = async () => {
             try {
-                const res = await fetch('/api/sms/balance')
+                const res = await api('/v2/messages/sms/balance')
                 const data = await res.json();
-                setBalance(data?.balance.toFixed(2))
+                setBalance(data?.balance?.toFixed(2) || 0)
             } catch (e) {
                 setError({ general: e.message });
             }
@@ -44,12 +45,8 @@ function MessagePage() {
                 status: status[0],
                 message
             }
-            const res = await fetch('/api/sms', {
+            const res = await api('/v2/messages/sms', {
                 method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
                 body: JSON.stringify(data)
             })
 

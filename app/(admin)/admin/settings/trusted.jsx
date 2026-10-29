@@ -1,8 +1,15 @@
-import { Box, Text, Table, Alert } from "@chakra-ui/react"
-import { useEffect, useState } from "react"
-import dayjs from "dayjs";
+"use client";
+
+import { LuTrash, LuSmartphone, LuMonitor, LuTablet, LuInfo } from "react-icons/lu"
+import { Box, Text, Table, Alert, IconButton, Flex, Image, Button } from "@chakra-ui/react"
 import Loading from "@/components/admin/loading";
 import Error from "@/components/admin/error";
+import { useEffect, useState } from "react"
+import { api } from "@/utils/clientFetch";
+import { removeTrustedDevice } from "@/app/actions";
+import dayjs from "dayjs";
+import timeAgo from "@/utils/timeAgo";
+import { Tooltip } from "@/components/ui/tooltip";
 
 function Trusted() {
     const [devices, setDevices] = useState([]);
@@ -14,7 +21,7 @@ function Trusted() {
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch('/api/trusted', { credentials: "include" });
+            const res = await api('/v2/auth/trusted-device');
             const data = await res.json();
             setDevices(data?.trusted)
             setTotal(data?.total)
@@ -35,7 +42,7 @@ function Trusted() {
     } else if (error) {
         content = <Error col={5} error={error} />
     } else {
-        content = <TrustedComponent devices={devices} />
+        content = <TrustedComponent devices={devices} onDeleted={() => fetchDevices()} />
     }
 
     return (
@@ -47,10 +54,10 @@ function Trusted() {
                     <Table.Header bg="bg.emphasized">
                         <Table.Row>
                             <Table.ColumnHeader>Device</Table.ColumnHeader>
-                            <Table.ColumnHeader>OS</Table.ColumnHeader>
                             <Table.ColumnHeader>Browser</Table.ColumnHeader>
                             <Table.ColumnHeader>Location</Table.ColumnHeader>
                             <Table.ColumnHeader>Last session</Table.ColumnHeader>
+                            <Table.ColumnHeader></Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body textStyle="md">
@@ -64,38 +71,108 @@ function Trusted() {
 
 export default Trusted
 
+function TrustedComponent({ devices, onDeleted }) {
 
-function TrustedComponent({ devices }) {
+    const deviceIcon = (device) => {
+        if(device === "Mobile") return <LuSmartphone />
+        if(device === "Tablet") return <LuTablet />
+        if(device === "Desktop") return <LuMonitor />
+        return <LuInfo />
+    }
+
+    const iconPath = (browser) => {
+        let imagePath;
+        if(browser === "Chrome") {
+            imagePath = "/browser/chrome.png"
+        } else if (browser === "Firefox"){
+            imagePath = "/browser/chrome.png"
+        } else if(browser === "Edge") {
+            imagePath = "/browser/chrome.png"
+        } else if(browser === "Safari") {
+            imagePath = "/browser/chrome.png"
+        } else if(browser === "Opera") {
+            imagePath = "/browser/chrome.png"
+        } else {
+            imagePath = "/browser/chrome.png"
+        }
+
+        return imagePath;
+    }
+
     return (
-        <>
-            {devices?.length > 0 ? devices.map((trusted) => (
-                <Table.Row key={trusted._id}>
-                    <Table.Cell>
-                        {trusted?.device}
-                    </Table.Cell>
-                    <Table.Cell>
-                        {trusted?.os}
-                    </Table.Cell>
-                    <Table.Cell>
-                        {trusted?.browser}
-                    </Table.Cell>
-                    <Table.Cell>
-                        {trusted?.ip}
-                    </Table.Cell>
-                    <Table.Cell>
-                        {dayjs(trusted?.addedAt).format("DD MMMM YYYY h:mm A")}
-                    </Table.Cell>
-                </Table.Row>
-            )) : (
-                <Table.Row>
-                    <Table.Cell colSpan={5}>
-                        <Alert.Root status="warning">
-                            <Alert.Indicator />
-                            <Alert.Title>No Trusted Device</Alert.Title>
-                        </Alert.Root>
-                    </Table.Cell>
-                </Table.Row>
-            )}
-        </>
+      <>
+        {devices?.length > 0 ? (
+          devices.map((trusted) => (
+            <Table.Row key={trusted._id}>
+              <Table.Cell>
+                <Flex alignItems="center" gap={3}>
+                    {deviceIcon(trusted?.device)} {trusted?.os}
+                </Flex>
+              </Table.Cell>
+              <Table.Cell>
+                <Image
+                    src={iconPath(trusted?.browser)}
+                    boxSize="25px"
+                    borderRadius="full"
+                    fit="cover"
+                    alt={trusted?.browser}
+                />
+              </Table.Cell>
+              <Table.Cell>{trusted?.ip}</Table.Cell>
+              <Table.Cell>
+                <Tooltip content={dayjs(trusted?.addedAt).format("dddd, DD MMMM YYYY h:mm A")}>
+                    <Button variant="plain" size="sm">
+                        {timeAgo(trusted?.addedAt)}
+                    </Button>
+                </Tooltip>
+              </Table.Cell>
+              <Table.Cell>
+                <RemoveDevice id={trusted._id} onDeleted={onDeleted} />
+              </Table.Cell>
+            </Table.Row>
+          ))
+        ) : (
+          <Table.Row>
+            <Table.Cell colSpan={5}>
+              <Alert.Root status="warning">
+                <Alert.Indicator />
+                <Alert.Title>No Trusted Device</Alert.Title>
+              </Alert.Root>
+            </Table.Cell>
+          </Table.Row>
+        )}
+      </>
+    );
+}
+
+function RemoveDevice({id, onDeleted}) {
+    const [loading, setLoading] = useState(false);
+
+    const handleRemove = async () => {
+        setLoading(true);
+        try {
+            const res = await removeTrustedDevice(id);
+            if (res && res.success === false) {
+                console.log(res.message);
+                return;
+            }
+            await onDeleted?.(id);
+        } catch (e) {
+            console.log(e.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    return (
+        <IconButton 
+            rounded="full"
+            variant="ghost"
+            colorPalette="red"
+            onClick={handleRemove}
+            loading={loading}
+        >
+            <LuTrash />
+        </IconButton>
     )
 }

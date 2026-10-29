@@ -6,21 +6,34 @@ import Pagination from "@/components/admin/pagination"
 import CoursesComponent from "./_components/courses-component";
 import CourseEdit from "./_components/course-edit";
 import NewCourse from "./_components/new-course";
-import { useSearchParams } from "next/navigation";
-import { useFetchData } from "@/hooks/useFetchData";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Loading from "@/components/admin/loading";
 import Error from "@/components/admin/error";
 import { useEffect, useState } from "react";
+import useSettings from "@/hooks/useSettings";
+import useApi from "@/hooks/useApi";
 
 function CoursesPage() {
     const [edit, setEdit] = useState(false)
     const searchParams = useSearchParams()
-    const limit = 10
-    const { data: { courses, total }, loading, error } = useFetchData('courses', limit)
+    const pathname = usePathname() || "/";
+    const { replace } = useRouter();
+
+    const {limit} = useSettings()
+    const { data, refetch, loading, error } = useApi('courses', {limit})
 
     useEffect(() => {
-        if (searchParams.get("edit")) setEdit(true)
+        if (searchParams.get("edit")) {
+            setEdit(true)
+        } else {
+            setEdit(false)
+        }
     }, [searchParams])
+
+    const handleChanged = async () => {
+        replace(pathname);
+        await refetch();
+    };
 
     let content = null
     if (loading) {
@@ -28,7 +41,7 @@ function CoursesPage() {
     } else if (error) {
         content = <Error col={5} error={error} />
     } else {
-        content = <CoursesComponent data={courses} />
+        content = <CoursesComponent data={data?.courses} onChanged={handleChanged} />
     }
 
     return (
@@ -50,7 +63,7 @@ function CoursesPage() {
                     gap={3}
                     mb={3}
                 >
-                    <Text textStyle="md">Total : {total}</Text>
+                    <Text textStyle="md">Total : {data?.total}</Text>
                     <Search placeholder="Search Courses" />
                 </Flex>
                 <Table.ScrollArea borderWidth="1px" maxW="full">
@@ -76,7 +89,7 @@ function CoursesPage() {
                 </Table.ScrollArea>
                 <Pagination
                     limit={limit}
-                    totalData={total || 0}
+                    totalData={data?.total || 0}
                 />
             </GridItem>
         </Grid>

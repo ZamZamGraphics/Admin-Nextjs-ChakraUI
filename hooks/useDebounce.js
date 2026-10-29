@@ -8,11 +8,10 @@ export default function useDebounce(value, delay) {
             setDebouncedValue(value);
         }, delay);
 
-        // Cleanup function to clear the timeout if value or delay changes
         return () => {
             clearTimeout(handler);
         };
-    }, [value, delay]); // Re-run effect if value or delay changes
+    }, [value, delay]);
 
     return debouncedValue;
 }

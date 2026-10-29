@@ -1,12 +1,13 @@
 import { Suspense } from "react";
 import { Alert } from "@chakra-ui/react";
-import { serverFetchById } from "@/utils";
 import EditUser from "../_components/edit-user";
+import { apiFetch } from "@/utils/apiServer";
 
 async function page({ params }) {
     const { userId } = await params;
     try {
-        const user = await serverFetchById('users', userId)
+        const res = await apiFetch(`/v2/users/${userId}`)
+        const user = await res.json()
         return (
             <Suspense fallback="Loading Edit User...">
                 <EditUser userInfo={user} />

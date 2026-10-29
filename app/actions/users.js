@@ -1,21 +1,18 @@
 "use server"
 import { revalidateTag } from "next/cache";
-import { auth } from "@/auth";
+import { apiFetch } from "@/utils/apiServer";
+import { signOut } from "@/auth";
 
 export async function addUser(formData) {
-    const session = await auth()
-    const token = session?.accessToken
-
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/users/register`, {
+        const res = await apiFetch(`/v2/users/register`, {
             method: "POST",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            },
             body: formData
         })
 
-        const data = await response.json();
+        if (res.status === 401) await signOut({ redirectTo: "/login?reason=session" });
+        const data = await res.json();
+
         if (data?.success) {
             revalidateTag('users')
             return data;
@@ -27,19 +24,15 @@ export async function addUser(formData) {
 }
 
 export async function updateUser(id, formData) {
-    const session = await auth()
-    const token = session?.accessToken
-
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/users/${id}`, {
+        const res = await apiFetch(`/v2/users/${id}`, {
             method: "PATCH",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            },
             body: formData
         })
 
-        const data = await response.json();
+        if (res.status === 401) await signOut({ redirectTo: "/login?reason=session" });
+        const data = await res.json();
+
         if (data?.success) {
             revalidateTag('users')
             revalidateTag('user')
@@ -52,18 +45,15 @@ export async function updateUser(id, formData) {
 }
 
 export async function deleteUser(id) {
-    const session = await auth()
-    const token = session?.accessToken
-
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/users/${id}`, {
+        const res = await apiFetch(`/v2/users/${id}`, {
             method: "DELETE",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
         })
 
-        const data = await response.json();
+        if (res.status === 401) await signOut({ redirectTo: "/login?reason=session" });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) return { success: false, message: data.message || "Delete failed" };
+
         revalidateTag('users')
         return data;
     } catch (error) {

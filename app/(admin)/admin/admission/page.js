@@ -4,14 +4,32 @@ import { Box, Flex, Table, Text } from "@chakra-ui/react";
 import Search from "@/components/admin/search";
 import Pagination from "@/components/admin/pagination";
 import AdmissionComponent from "./_components/admission-component";
-import { useFetchData } from "@/hooks/useFetchData";
 import Loading from "@/components/admin/loading";
 import Error from "@/components/admin/error";
 import useSettings from "@/hooks/useSettings";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import useApi from "@/hooks/useApi";
 
 function AdmissionPage() {
     const { limit } = useSettings()
-    const { data: { admission, total }, loading, error } = useFetchData('admission', limit)
+    const { data, refetch, loading, error } = useApi('admission', {limit})
+
+    const router = useRouter();
+    const pathname = usePathname() || "/";
+    const searchParams = useSearchParams();
+    
+    const items = data?.admission || [];
+    const page = Number(searchParams.get("page")) || 1;
+
+    const handleChanged = async () => {
+        if (items.length === 1 && page > 1) {
+            const params = new URLSearchParams(searchParams.toString());
+            params.set("page", String(page - 1));
+            router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+            return;
+        }
+        await refetch();
+    };
 
     let content = null
     if (loading) {
@@ -19,7 +37,7 @@ function AdmissionPage() {
     } else if (error) {
         content = <Error col={7} error={error} />
     } else {
-        content = <AdmissionComponent data={admission} />
+        content = <AdmissionComponent data={data?.admission} onChanged={handleChanged} />
     }
 
     return (
@@ -33,7 +51,7 @@ function AdmissionPage() {
                 gap={3}
                 mb={3}
             >
-                <Text textStyle="md">Total : {total}</Text>
+                <Text textStyle="md">Total : {data?.total}</Text>
                 <Search placeholder="Search Admission" />
             </Flex>
             <Table.ScrollArea borderWidth="1px" maxW="full">
@@ -66,7 +84,7 @@ function AdmissionPage() {
             </Table.ScrollArea>
             <Pagination
                 limit={limit}
-                totalData={total || 0}
+                totalData={data?.total || 0}
             />
         </Box>
     )

@@ -1,14 +1,30 @@
 import { signOut } from "next-auth/react"
-import useLoggedUser from "@/hooks/useLoggedUser"
+import { api } from "@/utils/clientFetch"
 import { Avatar, Icon, Menu, Portal } from "@chakra-ui/react"
 import { LuLogOut, LuSettings, LuUser } from "react-icons/lu"
-import Link from "next/link"
 import { getImageUrl } from "@/utils/getImageUrl"
+import { useState, useEffect } from "react"
+import Link from "next/link"
 
 export default function AvatarMenu() {
-    const { user } = useLoggedUser()
+    const [user, setUser] = useState({});
 
+    useEffect(() => {
+        const fetchUser = async () => {
+            const res = await api("/v2/users/me");
+            const data = await res.json();
+            setUser(data);
+        }
+        fetchUser()
+    },[]);
+    
     const avatar = getImageUrl(user?.avatar);
+
+    const handleLogout = async () => {
+        await api("/v2/auth/logout")
+        await signOut({ redirectTo: "/login?reason=session" });
+    }
+
     return (
         <Menu.Root>
             <Menu.Trigger rounded="full" focusRing="outside">
@@ -47,7 +63,7 @@ export default function AvatarMenu() {
                         <Menu.Item
                             value="logout"
                             cursor="pointer"
-                            onClick={() => signOut()}
+                            onClick={handleLogout}
                         >
                             <Icon><LuLogOut /></Icon>
                             Logout

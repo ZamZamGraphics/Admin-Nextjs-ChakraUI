@@ -1,4 +1,3 @@
-import { serverFetchById } from '@/utils'
 import { Theme, Alert, Box, DataList, Grid, GridItem, Table, Text, Container, Icon } from '@chakra-ui/react'
 import logoLight from "@/public/logo-light.svg"
 import Image from 'next/image'
@@ -8,12 +7,14 @@ import PrintButton from './print-button'
 import { LuCircleAlert } from 'react-icons/lu'
 import BackButton from './back-button'
 import { totalPayment } from '@/lib/utils'
+import { apiFetch } from '@/utils/apiServer'
 
 async function page({ params }) {
     const { id } = await params
 
     try {
-        const admission = await serverFetchById('admission', id)
+        const res = await apiFetch(`/v2/admission/${id}`)
+        const admission = await res.json()
 
         if (!admission) {
             return (

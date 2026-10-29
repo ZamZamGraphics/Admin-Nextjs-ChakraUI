@@ -3,28 +3,44 @@
 import useDebounce from "@/hooks/useDebounce";
 import { Box, Input, InputGroup } from "@chakra-ui/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { LuSearch } from "react-icons/lu";
 
 function Search({ placeholder }) {
   const searchParams = useSearchParams();
-  const initialSearch = searchParams.get("search") || "";
-  const [value, setValue] = useState(initialSearch);
-
-  const debounce = useDebounce(value, 500);
   const pathname = usePathname();
   const { replace } = useRouter();
 
+  const urlSearch = searchParams.get("search") || "";
+  const [value, setValue] = useState(urlSearch);
+  const debounce = useDebounce(value, 500);
+
+  const spRef = useRef(searchParams)
+  spRef.current = searchParams;
+  const lastPushed = useRef(urlSearch);
+
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
+    if (urlSearch === lastPushed.current) return;
+    lastPushed.current = urlSearch;
+    setValue(urlSearch);
+  }, [urlSearch]);
+
+  useEffect(() => {
+    const current = spRef.current;
+    if (debounce === (current.get("search") || "")) return;
+
+    const params = new URLSearchParams(current.toString());
     if (debounce) {
       params.set("search", debounce);
+      params.set("page", "1");
     } else {
       params.delete("search");
+      params.delete("page");
     }
 
-    replace(`${pathname}?${params.toString()}`);
-  }, [debounce, pathname, replace, searchParams]);
+    lastPushed.current = debounce;
+    replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [debounce]);
 
   return (
     <Box bg="bg" w="sm">

@@ -1,21 +1,18 @@
 "use server"
 import { revalidateTag } from "next/cache";
-import { auth } from "@/auth";
+import { apiFetch } from "@/utils/apiServer";
+import { signOut } from "@/auth";
 
 export async function addEmployee(formData) {
-    const session = await auth()
-    const token = session?.accessToken
-
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/employee/register`, {
+        const res = await apiFetch(`/v2/employee/register`, {
             method: "POST",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            },
             body: formData
         })
 
-        const data = await response.json();
+        if (res.status === 401) await signOut({ redirectTo: "/login?reason=session" });
+        const data = await res.json();
+        
         if (data?.employee) {
             revalidateTag('employees')
             return {
@@ -30,19 +27,15 @@ export async function addEmployee(formData) {
 }
 
 export async function updateEmployee(id, formData) {
-    const session = await auth()
-    const token = session?.accessToken
-
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/employee/${id}`, {
+        const res = await apiFetch(`/v2/employee/${id}`, {
             method: "PATCH",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            },
             body: formData
         })
 
-        const data = await response.json();
+        if (res.status === 401) await signOut({ redirectTo: "/login?reason=session" });
+        const data = await res.json();
+        
         if (data?.employee) {
             revalidateTag('employees')
             revalidateTag('employee')
@@ -58,18 +51,15 @@ export async function updateEmployee(id, formData) {
 }
 
 export async function deleteEmployee(id) {
-    const session = await auth()
-    const token = session?.accessToken
-
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/employee/${id}`, {
+        const res = await apiFetch(`/v2/employee/${id}`, {
             method: "DELETE",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
         })
 
-        const data = await response.json();
+        if (res.status === 401) await signOut({ redirectTo: "/login?reason=session" });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) return { success: false, message: data.message || "Delete failed" };
+        
         revalidateTag('employees')
         return data;
     } catch (error) {

@@ -8,6 +8,7 @@ import { useFormStatus } from "react-dom"
 import { useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import dayjs from "dayjs";
+import { api } from "@/utils/clientFetch";
 
 function BatchEdit() {
   const searchParams = useSearchParams();
@@ -39,10 +40,9 @@ function BatchEdit() {
   useEffect(() => {
     async function fetchBatch() {
       try {
-        const res = await fetch(`/api/batches/${id}`, {
-          credentials: "include",
-        })
+        const res = await api(`/v2/batches/${id}`)
         const response = await res.json()
+        console.log('batch ', response)
         if (response) {
           setBatchNo(response?.batchNo)
           setStudent(response?.student)
@@ -80,6 +80,7 @@ function BatchEdit() {
 
     try {
       const response = await updateBatch(id, formData)
+      console.log('updateBatch ', response)
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
       if (response?.success) {
@@ -126,8 +127,9 @@ function BatchEdit() {
           <Field.Root>
             <Input defaultValue={courseName} disabled />
           </Field.Root>
-          <Field.Root>
+          <Field.Root invalid={error?.student}>
             <Input defaultValue={student} disabled />
+            <Field.ErrorText>{error?.student?.msg}</Field.ErrorText>
           </Field.Root>
           <Field.Root invalid={error?.startDate}>
             <CalendarInput

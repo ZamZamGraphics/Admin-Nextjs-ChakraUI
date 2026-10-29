@@ -1,7 +1,7 @@
 "use client"
 
 import { Table, Text, Alert } from '@chakra-ui/react'
-import { clientFetch } from '@/utils/client-fetch'
+import { clientFetch } from '@/utils/clientFetch'
 import { useEffect, useState } from 'react'
 import Loading from './loading'
 import Error from './error'

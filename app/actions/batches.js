@@ -1,22 +1,18 @@
 "use server"
 import { revalidateTag } from "next/cache";
-import { auth } from "@/auth";
+import { apiFetch } from "@/utils/apiServer";
+import { signOut } from "@/auth";
 
 export async function addBatch(formData) {
-    const session = await auth()
-    const token = session?.accessToken
-
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/batches/new`, {
+        const res = await apiFetch("/v2/batches/new", {
             method: "POST",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify(formData)
         })
 
-        const data = await response.json();
+        if (res.status === 401) await signOut({ redirectTo: "/login?reason=session" });
+        const data = await res.json();
+
         if (data?.batch) {
             revalidateTag('batches')
             return {
@@ -31,20 +27,15 @@ export async function addBatch(formData) {
 }
 
 export async function updateBatch(id, formData) {
-    const session = await auth()
-    const token = session?.accessToken
-
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/batches/${id}`, {
+        const res = await apiFetch(`/v2/batches/${id}`, {
             method: "PATCH",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify(formData)
         })
 
-        const data = await response.json();
+        if (res.status === 401) await signOut({ redirectTo: "/login?reason=session" });
+        const data = await res.json();
+
         if (data?.batch) {
             revalidateTag('batches')
             revalidateTag('batch')
@@ -60,19 +51,15 @@ export async function updateBatch(id, formData) {
 }
 
 export async function deleteBatch(id) {
-    const session = await auth()
-    const token = session?.accessToken
-
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/batches/${id}`, {
+        const res = await apiFetch(`/v2/batches/${id}`, {
             method: "DELETE",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
         })
 
-        const data = await response.json();
+        if (res.status === 401) await signOut({ redirectTo: "/login?reason=session" });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) return { success: false, message: data.message || "Delete failed" };
+
         revalidateTag('batches')
         revalidateTag('students')
         revalidateTag('admissions')

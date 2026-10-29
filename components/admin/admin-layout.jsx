@@ -12,14 +12,21 @@ import {
 } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import { LuMenu } from "react-icons/lu"
-import { signOut } from "next-auth/react"
+import { api } from "@/utils/clientFetch"
+import { useSession } from "next-auth/react"
 
-function AdminLayout({ children, auth }) {
+function AdminLayout({ children }) {
     const [open, setOpen] = useState(false)
+    const { status } = useSession()
 
     useEffect(() => {
-        if (!auth) signOut()
-    }, [auth])
+        if (status !== "authenticated") return;
+        const check = () => api("/v2/auth/ping")
+        check();
+        const id = setInterval(check, 60_000);
+        window.addEventListener("focus", check);
+        return () => { clearInterval(id); window.removeEventListener("focus", check); };
+    }, [status])
 
     const sidebarWidth = "240px"
     const headerHeight = "64px"

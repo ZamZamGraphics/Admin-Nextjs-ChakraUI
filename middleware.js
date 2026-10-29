@@ -1,9 +1,11 @@
 import { auth } from "@/auth"
 import { NextResponse } from "next/server"
+import { getAccessToken } from "./lib/serverToken"
 
 export default auth(async (req) => {
     const { pathname } = req.nextUrl
-    const token = req.auth?.accessToken || null
+    const accessToken = await getAccessToken();
+
     const privateRoute = ["/admin", "/invoice"];
     const url = req.nextUrl.clone();
 
@@ -15,10 +17,10 @@ export default auth(async (req) => {
     }
 
     if (privateRoute.some(route => pathname.startsWith(route))) {
-        if (!token) return NextResponse.redirect(new URL("/login", req.url))
+        if (!accessToken) return NextResponse.redirect(new URL("/login", req.url))
     }
 
-    if (pathname.startsWith("/login") && token) {
+    if (pathname.startsWith("/login") && accessToken) {
         return NextResponse.redirect(new URL("/admin", req.url))
     }
 

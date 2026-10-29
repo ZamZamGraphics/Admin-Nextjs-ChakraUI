@@ -1,22 +1,18 @@
 "use server"
 import { revalidateTag } from "next/cache";
-import { auth } from "@/auth";
+import { apiFetch } from "@/utils/apiServer";
+import { signOut } from "@/auth";
 
 export async function addAdmission(formData) {
-    const session = await auth()
-    const token = session?.accessToken
-
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/admission/new`, {
+        const res = await apiFetch("/v2/admission/new", {
             method: "POST",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify(formData)
-        })
+        });
+        
+        if (res.status === 401) await signOut({ redirectTo: "/login?reason=session" });
+        const data = await res.json();
 
-        const data = await response.json();
         if (data?.admission) {
             revalidateTag('admissions')
             revalidateTag('admission')
@@ -34,20 +30,15 @@ export async function addAdmission(formData) {
 }
 
 export async function addPayment(formData) {
-    const session = await auth()
-    const token = session?.accessToken
-
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/admission/payment`, {
+        const res = await apiFetch("/v2/admission/payment", {
             method: "POST",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify(formData)
-        })
+        });
 
-        const data = await response.json();
+        if (res.status === 401) await signOut({ redirectTo: "/login?reason=session" });
+        const data = await res.json();
+
         if (data?.admission) {
             revalidateTag('admissions')
             revalidateTag('admission')
@@ -65,19 +56,15 @@ export async function addPayment(formData) {
 }
 
 export async function deleteAdmission(id) {
-    const session = await auth()
-    const token = session?.accessToken
-
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/admission/${id}`, {
+        const res = await apiFetch(`/v2/admission/${id}`, {
             method: "DELETE",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        })
+        });
+        
+        if (res.status === 401) await signOut({ redirectTo: "/login?reason=session" });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) return { success: false, message: data.message || "Delete failed" };
 
-        const data = await response.json();
         if (data?.success) {
             revalidateTag('admissions')
             revalidateTag('admission')

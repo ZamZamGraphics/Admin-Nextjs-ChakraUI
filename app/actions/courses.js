@@ -1,22 +1,18 @@
 "use server"
 import { revalidateTag } from "next/cache";
-import { auth } from "@/auth";
+import { apiFetch } from "@/utils/apiServer";
+import { signOut } from "@/auth";
 
 export async function addCourse(formData) {
-    const session = await auth()
-    const token = session?.accessToken
-
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/courses/new`, {
+        const res = await apiFetch(`/v2/courses/new`, {
             method: "POST",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify(formData)
         })
 
-        const data = await response.json();
+        if (res.status === 401) await signOut({ redirectTo: "/login?reason=session" });
+        const data = await res.json();
+
         if (data?.course) {
             revalidateTag('courses')
             return {
@@ -31,20 +27,15 @@ export async function addCourse(formData) {
 }
 
 export async function updateCourse(id, formData) {
-    const session = await auth()
-    const token = session?.accessToken
-
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/courses/${id}`, {
+        const res = await apiFetch(`/v2/courses/${id}`, {
             method: "PATCH",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify(formData)
         })
 
-        const data = await response.json();
+        if (res.status === 401) await signOut({ redirectTo: "/login?reason=session" });
+        const data = await res.json();
+
         if (data?.course) {
             revalidateTag('courses')
             revalidateTag('course')
@@ -60,19 +51,15 @@ export async function updateCourse(id, formData) {
 }
 
 export async function deleteCourse(id) {
-    const session = await auth()
-    const token = session?.accessToken
-
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/courses/${id}`, {
+        const res = await apiFetch(`/v2/courses/${id}`, {
             method: "DELETE",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
         })
 
-        const data = await response.json();
+        if (res.status === 401) await signOut({ redirectTo: "/login?reason=session" });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) return { success: false, message: data.message || "Delete failed" };
+
         revalidateTag('courses')
         return data;
     } catch (error) {

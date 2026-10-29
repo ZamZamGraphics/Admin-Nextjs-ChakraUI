@@ -1,5 +1,8 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
+import { jwtVerify } from "jose";
+
+const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
     providers: [
@@ -7,12 +10,25 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             name: "Credentials",
             credentials: {},
             async authorize(credentials) {
-                if (!credentials?.accessToken) return null;
-                const userid = credentials.userid
-                return {
-                    userid,
-                    accessToken: credentials.accessToken
-                };
+                try {
+                  if (!credentials?.accessToken) return null;
+                  const { payload } = await jwtVerify(
+                    credentials.accessToken,
+                    secret,
+                  );
+                  if (payload.purpose) return null;
+                  if (String(payload.userid) !== String(credentials.userid))
+                    return null;
+
+                  return {
+                    id: String(payload.userid),
+                    userid: String(payload.userid),
+                    accessToken: credentials.accessToken,
+                    exp: payload.exp,
+                  };
+                } catch {
+                  return null;
+                }
             },
         }),
     ],
@@ -22,19 +38,19 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     },
     secret: process.env.AUTH_SECRET,
     trustHost: true,
+    useSecureCookies: process.env.NODE_ENV === "production",
     callbacks: {
         async jwt({ token, user }) {
             if (user?.accessToken) {
                 token.userid = user.userid;
                 token.accessToken = user.accessToken;
+                token.accessExp = user.exp;
             }
-            return token
+            if (token.accessExp && Date.now() / 1000 > token.accessExp) return null;
+            return token;
         },
         async session({ session, token }) {
-            if (token?.accessToken) {
-                session.accessToken = token.accessToken;
-                session.userid = token.userid;
-            }
+            if (token?.userid) session.userid = token.userid;
             return session
         },
     },

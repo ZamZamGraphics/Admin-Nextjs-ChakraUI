@@ -5,7 +5,7 @@ import { LuEllipsisVertical, LuSquarePen, LuTrash } from "react-icons/lu"
 import { Box, Dialog, Icon, Menu, Portal, useDisclosure } from "@chakra-ui/react"
 import DeleteDialog from "./delete"
 
-function Action({ id }) {
+function Action({ id, onChanged }) {
     const { open, onOpen, onClose } = useDisclosure()
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams.toString());
@@ -55,7 +55,7 @@ function Action({ id }) {
                 onOpenChange={onClose}
                 role="alertdialog"
             >
-                <DeleteDialog id={id} />
+                <DeleteDialog id={id} onDeleted={onChanged} />
             </Dialog.Root>
         </>
     )

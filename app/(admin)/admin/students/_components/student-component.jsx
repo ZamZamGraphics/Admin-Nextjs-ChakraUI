@@ -4,7 +4,7 @@ import StudentDialog from "./student-dialog";
 import Action from "./action";
 import { getImageUrl } from "@/utils/getImageUrl";
 
-function StudentComponent({ data }) {
+function StudentComponent({ data, onChanged }) {
     return (
         <>
             {data?.length > 0 ? data.map((std) => (
@@ -54,7 +54,7 @@ function StudentComponent({ data }) {
                     </Table.Cell>
                     <Table.Cell>{std?.totalDues}</Table.Cell>
                     <Table.Cell textAlign="center">
-                        <Action id={std?._id} />
+                        <Action id={std?._id} onChanged={onChanged} />
                     </Table.Cell>
                 </Table.Row>
             )) : (

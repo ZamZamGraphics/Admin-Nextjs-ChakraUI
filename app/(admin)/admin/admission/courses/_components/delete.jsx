@@ -8,19 +8,27 @@ import {
     Portal,
     Text,
 } from "@chakra-ui/react"
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function DeleteDialog({ id }) {
+export default function DeleteDialog({ id, onDeleted }) {
     const [error, setError] = useState("")
-    const router = useRouter()
-
+    const [loading, setLoading] = useState(false)
+    
     const handleDelete = async () => {
+        setLoading(true);
+        setError("");
+
         try {
-            await deleteCourse(id);
-            router.push(`/admin/admission/courses?deleted=${id}`)
+            const res = await deleteCourse(id);
+            if (res && res.success === false) {
+                setError(res.message || "Delete failed");
+                return;
+            }
+            await onDeleted?.(id);
         } catch (e) {
-            setError({ message: e.message });
+            setError(e.message || "Something went wrong");
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -32,18 +40,18 @@ export default function DeleteDialog({ id }) {
                     <Dialog.Header>
                         <Dialog.Title>Delete Course</Dialog.Title>
                         <Dialog.CloseTrigger asChild>
-                            <CloseButton size="sm" />
+                            <CloseButton size="sm" disabled={loading} />
                         </Dialog.CloseTrigger>
                     </Dialog.Header>
                     <Dialog.Body>
-                        {error?.message && <Text colorPalette="red">{error?.message}</Text>}
+                        {error && <Text colorPalette="red">{error}</Text>}
                         Are you sure you want to delete this course?
                     </Dialog.Body>
                     <Dialog.Footer>
                         <Dialog.ActionTrigger asChild>
-                            <Button variant="outline">Cancel</Button>
+                            <Button variant="outline" disabled={loading}>Cancel</Button>
                         </Dialog.ActionTrigger>
-                        <Button colorPalette="red" onClick={handleDelete}>
+                        <Button colorPalette="red" onClick={handleDelete} loading={loading}>
                             Delete
                         </Button>
                     </Dialog.Footer>

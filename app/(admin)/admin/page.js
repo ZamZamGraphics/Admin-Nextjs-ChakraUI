@@ -6,13 +6,12 @@ import CalendarInput from '@/components/admin/calendar-input'
 import UpcomingBatches from '@/components/admin/upcoming-batches'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation';
-import { clientFetch } from '@/utils/client-fetch'
+import { api, clientFetch } from '@/utils/clientFetch'
 import { totalPayment as totalPay } from '@/lib/utils'
 import dayjs from 'dayjs'
-import useLoggedUser from '@/hooks/useLoggedUser'
 
 function AdminHomePage() {
-    const { loading, user } = useLoggedUser()
+    const [user, setUser] = useState({});
 
     const [from, setFrom] = useState(dayjs(new Date()).format("DD-MM-YYYY"))
     const [to, setTo] = useState(dayjs(new Date()).format("DD-MM-YYYY"))
@@ -26,9 +25,18 @@ function AdminHomePage() {
     const [smsBalance, setSMSBalance] = useState(0)
 
     useEffect(() => {
+        const fetchUser = async () => {
+            const res = await api("/v2/users/me");
+            const data = await res.json();
+            setUser(data);
+        }
+        fetchUser()
+    },[]);
+
+    useEffect(() => {
         const getBalance = async () => {
             try {
-                const res = await fetch('/api/sms/balance')
+                const res = await api('/v2/messages/sms/balance')
                 const data = await res.json();
                 setSMSBalance(data?.balance.toFixed(2))
             } catch (err) {
@@ -69,7 +77,7 @@ function AdminHomePage() {
 
     return (
         <Box>
-            {!loading && <SecurityAlert is2FAEnabled={user?.is2FAEnabled} />}
+            {user && <SecurityAlert is2FAEnabled={user?.is2FAEnabled} />}
             <Flex
                 w="full"
                 direction={{ base: "column", md: "row" }}

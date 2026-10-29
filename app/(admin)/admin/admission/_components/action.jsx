@@ -5,7 +5,7 @@ import { Box, Dialog, Icon, Menu, Portal, useDisclosure } from "@chakra-ui/react
 import DeleteDialog from "./delete"
 import Link from "next/link"
 
-function Action({ id }) {
+function Action({ id, onChanged }) {
     const { open, onOpen, onClose } = useDisclosure()
 
     return (
@@ -52,7 +52,7 @@ function Action({ id }) {
                 onOpenChange={onClose}
                 role="alertdialog"
             >
-                <DeleteDialog id={id} />
+                <DeleteDialog id={id} onDeleted={onChanged} />
             </Dialog.Root>
         </>
     )

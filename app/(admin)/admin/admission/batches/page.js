@@ -6,21 +6,34 @@ import Pagination from "@/components/admin/pagination"
 import BatchesComponent from "./_components/batches-component";
 import BatchEdit from "./_components/batch-edit";
 import NewBatch from "./_components/new-batch";
-import { useSearchParams } from "next/navigation";
-import { useFetchData } from "@/hooks/useFetchData";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Loading from "@/components/admin/loading";
 import Error from "@/components/admin/error";
 import { useEffect, useState } from "react";
+import useSettings from "@/hooks/useSettings";
+import useApi from "@/hooks/useApi";
 
 function BatchPage() {
     const [edit, setEdit] = useState(false)
     const searchParams = useSearchParams()
-    const limit = 10
-    const { data: { batches, total }, loading, error } = useFetchData('batches', limit)
+    const pathname = usePathname() || "/";
+    const { replace } = useRouter();
+
+    const { limit } = useSettings();
+    const { data, refetch, loading, error } = useApi('batches', { limit })
 
     useEffect(() => {
-        if (searchParams.get("edit")) setEdit(true)
+        if (searchParams.get("edit")) {
+            setEdit(true)
+        } else {
+            setEdit(false)
+        }
     }, [searchParams])
+
+    const handleChanged = async () => {
+        replace(pathname);
+        await refetch();
+    };
 
     let content = null
     if (loading) {
@@ -28,7 +41,7 @@ function BatchPage() {
     } else if (error) {
         content = <Error col={7} error={error} />
     } else {
-        content = <BatchesComponent data={batches} />
+        content = <BatchesComponent data={data?.batches} onChanged={handleChanged} />
     }
 
     return (
@@ -50,7 +63,7 @@ function BatchPage() {
                     gap={3}
                     mb={3}
                 >
-                    <Text textStyle="md">Total : {total}</Text>
+                    <Text textStyle="md">Total : {data?.total}</Text>
                     <Search placeholder="Search Batches" />
                 </Flex>
                 <Table.ScrollArea borderWidth="1px" maxW="full">
@@ -78,7 +91,7 @@ function BatchPage() {
                 </Table.ScrollArea>
                 <Pagination
                     limit={limit}
-                    totalData={total || 0}
+                    totalData={data?.total || 0}
                 />
             </GridItem>
         </Grid>

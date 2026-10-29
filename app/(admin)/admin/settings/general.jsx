@@ -3,38 +3,20 @@
 import { useColorMode } from "@/components/ui/color-mode"
 import { Alert, Box, Button, Grid, GridItem, NumberInput, Text } from "@chakra-ui/react"
 import { Switch } from "@chakra-ui/react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useFormStatus } from "react-dom"
 import { updateSettings } from "@/app/actions/settings"
-import { clientFetch } from "@/utils/client-fetch"
 
-function GeneralSettings() {
-    const [id, setId] = useState(null)
+function GeneralSettings({data}) {
     const { pending } = useFormStatus()
     const [success, setSuccess] = useState("")
     const [error, setError] = useState("")
     const { toggleColorMode } = useColorMode()
 
-    const [emailChecked, setEmailChecked] = useState(false)
-    const [smsChecked, setSMSChecked] = useState(false)
-    const [darkMode, setDarkMode] = useState(true)
-    const [perPage, setPerPage] = useState(5)
-
-    useEffect(() => {
-        const fetchSettings = async () => {
-            try {
-                const res = await clientFetch("settings")
-                setId(res._id)
-                setEmailChecked(res.emailChecked)
-                setSMSChecked(res.smsChecked)
-                setDarkMode(res.darkMode)
-                setPerPage(res.perPage)
-            } catch (err) {
-                setError({ message: err?.message })
-            }
-        }
-        fetchSettings()
-    }, [])
+    const [emailChecked, setEmailChecked] = useState(data?.emailChecked)
+    const [smsChecked, setSMSChecked] = useState(data?.smsChecked)
+    const [darkMode, setDarkMode] = useState(data?.darkMode)
+    const [perPage, setPerPage] = useState(data?.perPage)
 
     const handleColorMode = async (e) => {
         toggleColorMode()
@@ -45,7 +27,7 @@ function GeneralSettings() {
             perPage,
             darkMode: e.checked
         }
-        await updateSettings(id, formData)
+        await updateSettings(data?._id, formData)
     }
 
     const handleSubmit = async (e) => {
@@ -60,7 +42,7 @@ function GeneralSettings() {
                 darkMode,
                 perPage
             }
-            const res = await updateSettings(id, formData)
+            const res = await updateSettings(data?._id, formData)
             window.scrollTo({ top: 0, behavior: 'smooth' });
             if (res?.success) setSuccess({ message: res.message })
             if (res?.errors) setError({ message: res.errors?.perPage?.msg })

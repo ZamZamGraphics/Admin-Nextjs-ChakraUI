@@ -4,7 +4,7 @@ import Action from "./action";
 import EmployeeDialog from "./employee-dialog";
 import { getImageUrl } from "@/utils/getImageUrl";
 
-function EmployeeComponent({ data }) {
+function EmployeeComponent({ data, onChanged }) {
     return (
         <>
             {data?.length > 0 ? data.map((employee) => (
@@ -35,7 +35,7 @@ function EmployeeComponent({ data }) {
                         <Status status={employee?.status} />
                     </Table.Cell>
                     <Table.Cell textAlign="center">
-                        <Action id={employee?._id} />
+                        <Action id={employee?._id} onChanged={onChanged} />
                     </Table.Cell>
                 </Table.Row>
             )) : (

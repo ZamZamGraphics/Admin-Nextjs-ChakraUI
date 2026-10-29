@@ -1,6 +1,6 @@
 "use client"
 export const dynamic = 'force-dynamic';
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Center, Card, Field, Input, Stack, Button, Alert, InputGroup } from "@chakra-ui/react"
 import Link from "next/link"
 import { signIn } from "next-auth/react"
@@ -10,20 +10,13 @@ import { PasswordInput } from "@/components/ui/password-input"
 import { credentialLogin, verifyOTP } from "@/app/actions"
 
 export default function LoginPage() {
-    const [ua, setUa] = useState("")
     const [step, setStep] = useState("login") // 'login' | 'otp'
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState({})
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [otp, setOtp] = useState("")
-    const [userid, setUserid] = useState("")
-    const [deviceId, setDeviceId] = useState(null)
-
-    // Get user-agent on client-side
-    useEffect(() => {
-        setUa(navigator.userAgent || "")
-    }, [])
+    const [preAuthToken, setPreAuthToken] = useState(null)
 
     const handleLogin = async (e) => {
         e.preventDefault()
@@ -31,26 +24,24 @@ export default function LoginPage() {
         setError({})
 
         try {
-            const response = await credentialLogin({ username, password, userAgent: ua })
-
-            if (!response?.success) setError({ message: response?.message })
-
-            if (response?.require2FA) {
-                setUserid(response.userid)
-                setDeviceId(response.deviceId)
+            const res = await credentialLogin({ username, password })
+            
+            if (!res?.success) setError({ message: res?.message })
+            
+            if (res?.require2FA) { 
+                setPreAuthToken(res.preAuthToken)
                 setStep("otp")
-            } else if (response?.success) {
-                await signIn("credentials", {
-                    userid: response.userid,
-                    accessToken: response.token,
+            } else if (res.success) {
+                await signIn("credentials", { 
+                    userid: res.userid,
+                    accessToken: res.token,
                     redirect: true,
                     callbackUrl: "/admin",
-                })
+                });
             } else {
-                // Merge errors and message
                 setError({
-                    ...(response?.errors || {}),
-                    ...(response?.message ? { message: response.message } : {}),
+                    ...(res?.errors || {}),
+                    ...(res?.message ? { message: res.message } : {}),
                 })
             }
         } catch (err) {
@@ -66,21 +57,21 @@ export default function LoginPage() {
         setError({})
 
         try {
-            const response = await verifyOTP({ userid, token: otp, deviceId, userAgent: ua })
+            const res = await verifyOTP({ preAuthToken, token: otp })
+            
+            if (!res?.success) setError({ message: res?.message })
 
-            if (!response?.success) setError({ message: response?.message })
-
-            if (response?.success) {
-                await signIn("credentials", {
-                    userid: response.userid,
-                    accessToken: response.token,
+            if (res?.success) {
+                await signIn("credentials", { 
+                    userid: res.userid,
+                    accessToken: res.token,
                     redirect: true,
                     callbackUrl: "/admin",
-                })
+                });
             } else {
                 setError({
-                    ...(response?.errors || {}),
-                    ...(response?.message ? { message: response.message } : {}),
+                    ...(res?.errors || {}),
+                    ...(res?.message ? { message: res.message } : {}),
                 })
             }
         } catch (err) {

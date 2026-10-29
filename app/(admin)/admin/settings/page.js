@@ -6,11 +6,14 @@ import Authentication from "./authentication"
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from 'next/navigation';
 import Trusted from "./trusted";
+import useApi from "@/hooks/useApi";
 
 function SettingsPage() {
     const router = useRouter();
     const pathname = usePathname();
     const [value, setValue] = useState('general')
+    
+    const { data, loading, error } = useApi("settings")
 
     const handleTabChange = (value) => {
         setValue(value);
@@ -26,7 +29,9 @@ function SettingsPage() {
         }
     }, []);
 
-    return (
+    if(loading) return "Loading...";
+    
+    if(data) return (
         <Tabs.Root value={value} onValueChange={(e) => handleTabChange(e.value)}>
             <Tabs.List>
                 <Tabs.Trigger value="general">General</Tabs.Trigger>
@@ -34,7 +39,7 @@ function SettingsPage() {
                 <Tabs.Trigger value="trusted">Trusted Device</Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content value="general">
-                <GeneralSettings />
+                <GeneralSettings data={data} />
             </Tabs.Content>
             <Tabs.Content value="authentication">
                 <Authentication />

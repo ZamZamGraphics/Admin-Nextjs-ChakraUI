@@ -4,7 +4,7 @@ import Action from "./action";
 import UserDialog from "./user-dialog";
 import { getImageUrl } from "@/utils/getImageUrl";
 
-function UserComponent({ data }) {
+function UserComponent({ data, onChanged }) {
     return (
         <>
             {data?.length > 0 ? data.map((user) => (
@@ -32,7 +32,7 @@ function UserComponent({ data }) {
                         <Status status={user?.status} />
                     </Table.Cell>
                     <Table.Cell textAlign="center">
-                        <Action id={user?._id} />
+                        <Action id={user?._id} onChanged={onChanged} />
                     </Table.Cell>
                 </Table.Row>
             )) : (

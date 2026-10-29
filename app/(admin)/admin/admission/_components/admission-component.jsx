@@ -6,7 +6,7 @@ import Link from "next/link";
 import dayjs from 'dayjs';
 import { getImageUrl } from "@/utils/getImageUrl";
 
-function AdmissionComponent({ data }) {
+function AdmissionComponent({ data, onChanged }) {
     return (
         <>
             {data?.length > 0 ? data.map((admission) => (
@@ -49,7 +49,7 @@ function AdmissionComponent({ data }) {
                         )}
                     </Table.Cell>
                     <Table.Cell textAlign="center">
-                        <Action id={admission?._id} />
+                        <Action id={admission?._id} onChanged={onChanged} />
                     </Table.Cell>
                 </Table.Row>
             )) : (

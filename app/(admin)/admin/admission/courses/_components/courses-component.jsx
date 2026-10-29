@@ -1,7 +1,7 @@
 import { Alert, Table } from "@chakra-ui/react";
 import Action from "./action";
 
-function CoursesComponent({ data }) {
+function CoursesComponent({ data, onChanged }) {
     return (
         <>
             {data?.length > 0 ? data.map((course) => (
@@ -11,7 +11,7 @@ function CoursesComponent({ data }) {
                     <Table.Cell>{course?.duration}</Table.Cell>
                     <Table.Cell>{course?.courseFee}</Table.Cell>
                     <Table.Cell textAlign="center">
-                        <Action id={course?._id} />
+                        <Action id={course?._id} onChanged={onChanged} />
                     </Table.Cell>
                 </Table.Row>
             )) : (

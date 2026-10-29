@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { parseDate, totalPayment } from "@/lib/utils";
 import { addPayment } from "@/app/actions/admissions";
+import { api } from "@/utils/clientFetch";
 
 function PaymentPage() {
     const { pending } = useFormStatus();
@@ -28,14 +29,12 @@ function PaymentPage() {
     const [transactionId, setTransactionId] = useState(null);
 
     const debounce = useDebounce(studentId, 500)
-    const router = useRouter()
+    const { replace } = useRouter()
 
     useEffect(() => {
         async function fetchStudent() {
             try {
-                const res = await fetch(`/api/admission/${batch}/${studentId}`, {
-                    credentials: "include",
-                })
+                const res = await api(`/v2/admission/${batch}/${studentId}`)
                 const response = await res.json()
                 if (response?.admission) {
                     const { admission } = response;
@@ -101,7 +100,7 @@ function PaymentPage() {
 
                 if (response?.success) {
                     const { admission } = response;
-                    router.push(`/invoice/${admission._id}`)
+                    replace(`/invoice/${admission._id}`)
                 }
 
                 if (response?.errors) {

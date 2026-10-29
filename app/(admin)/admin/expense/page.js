@@ -4,14 +4,36 @@ import { Box, Flex, Table, Text } from "@chakra-ui/react";
 import Pagination from "@/components/admin/pagination";
 import Search from "@/components/admin/search";
 import ExpenseComponent from "./_components/expense-component";
-import { useFetchData } from "@/hooks/useFetchData";
 import Loading from "@/components/admin/loading";
 import Error from "@/components/admin/error";
 import useSettings from "@/hooks/useSettings";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import useApi from "@/hooks/useApi";
 
 function ExpensePage() {
     const { limit } = useSettings()
-    const { data: { expenses, total }, loading, error } = useFetchData('expenses', limit)
+    const { data, refetch, loading, error } = useApi('expenses', { limit })
+
+    const { replace } = useRouter();
+    const pathname = usePathname() || "/";
+    const searchParams = useSearchParams();
+    
+    const items = data?.students || [];
+    const page = Number(searchParams.get("page")) || 1;
+
+    const handleChanged = async () => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete("search")
+        console.log('params ', params.toString())
+        if (items.length === 1 && page > 1) {
+            params.set("page", String(page - 1));
+            replace(`${pathname}?${params.toString()}`, { scroll: false });
+            return;
+        } else {
+            replace(pathname)
+        }
+        await refetch();
+    };
 
     let content = null
     if (loading) {
@@ -19,7 +41,7 @@ function ExpensePage() {
     } else if (error) {
         content = <Error col={6} error={error} />
     } else {
-        content = <ExpenseComponent data={expenses} />
+        content = <ExpenseComponent data={data?.expenses} onChanged={handleChanged} />
     }
 
     return (
@@ -33,7 +55,7 @@ function ExpensePage() {
                 gap={3}
                 mb={3}
             >
-                <Text textStyle="md">Total : {total}</Text>
+                <Text textStyle="md">Total : {data?.total}</Text>
                 <Search placeholder="Search Expense" />
             </Flex>
             <Table.ScrollArea borderWidth="1px" maxW="full">
@@ -60,7 +82,7 @@ function ExpensePage() {
             </Table.ScrollArea>
             <Pagination
                 limit={limit}
-                totalData={total || 0}
+                totalData={data?.total || 0}
             />
         </Box>
     )

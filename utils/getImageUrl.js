@@ -1,9 +1,5 @@
 const PUBLIC_URL = process.env.NEXT_PUBLIC_IMAGE_URL?.replace(/\/$/, "");
 
-/**
- * Build a permanent public URL for an object key.
- * Requires the bucket to have public access enabled in the R2 dashboard.
- */
 export const getImageUrl = (key) => {
     if (!key) return key;
 

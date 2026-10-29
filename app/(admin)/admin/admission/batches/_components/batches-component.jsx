@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 dayjs.extend(isBetween);
 import isBetween from "dayjs/plugin/isBetween";
 
-function BatchesComponent({ data }) {
+function BatchesComponent({ data, onChanged }) {
     return (
         <>
             {data?.length > 0 ? data.map((batch) => (
@@ -36,7 +36,7 @@ function BatchesComponent({ data }) {
                     <Table.Cell>{batch?.classDays}</Table.Cell>
                     <Table.Cell textAlign="center">{batch?.student?.length}</Table.Cell>
                     <Table.Cell textAlign="center">
-                        <Action id={batch?._id} />
+                        <Action id={batch?._id} onChanged={onChanged} />
                     </Table.Cell>
                 </Table.Row>
             )) : (

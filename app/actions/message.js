@@ -1,21 +1,18 @@
 "use server"
 import { revalidateTag } from "next/cache";
-import { auth } from "@/auth";
+import { apiFetch } from "@/utils/apiServer";
+import { signOut } from "@/auth";
 
 export async function sendMessage(formData) {
-    const session = await auth()
-    const token = session?.accessToken
-
     try {
-        const response = await fetch(`${process.env.API_URL}/v2/messages/sms`, {
+        const res = await apiFetch(`/v2/messages/sms`, {
             method: "POST",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            },
             body: JSON.stringify(formData)
         })
 
-        const data = await response.json();
+        if (res.status === 401) await signOut({ redirectTo: "/login?reason=session" });
+        const data = await res.json();
+
         if (data?.success) {
             revalidateTag('message')
             return {
@@ -28,4 +25,3 @@ export async function sendMessage(formData) {
         throw new Error('Internal Server Error');
     }
 }
-

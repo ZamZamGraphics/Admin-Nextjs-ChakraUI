@@ -3,6 +3,7 @@
 import { Alert, Box, Field, Input, Flex, Text, Button } from "@chakra-ui/react";
 import { useState } from "react";
 import CertificatePreview from "@/lib/certificate/CertificatePreview";
+import { api } from "@/utils/clientFetch";
 
 function CertificatePage() {
     const [error, setError] = useState("");
@@ -27,14 +28,7 @@ function CertificatePage() {
         setError("");
 
         try {
-            const res = await fetch('/api/certificate', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: 'include',
-                body: JSON.stringify({ batchNo, studentId }),
-            })
+            const res = await api(`/v2/admission/${batchNo}/${studentId}`)
             const result = await res.json();
             console.log('[result]', result);
             if (!result?.success) {

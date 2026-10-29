@@ -2,7 +2,7 @@ import { Alert, Table } from "@chakra-ui/react";
 import Action from "./action";
 import dayjs from "dayjs";
 
-function ExpenseComponent({ data }) {
+function ExpenseComponent({ data, onChanged }) {
     return (
         <>
             {data?.length > 0 ? data.map((expense) => (
@@ -13,7 +13,7 @@ function ExpenseComponent({ data }) {
                     <Table.Cell>{expense?.amount}</Table.Cell>
                     <Table.Cell>{dayjs(expense?.date).format("DD-MM-YYYY")}</Table.Cell>
                     <Table.Cell textAlign="center">
-                        <Action id={expense?._id} />
+                        <Action id={expense?._id} onChanged={onChanged} />
                     </Table.Cell>
                 </Table.Row>
             )) : (

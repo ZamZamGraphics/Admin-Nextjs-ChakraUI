@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { clientFetch } from "@/utils/client-fetch";
+import { clientFetch } from "@/utils/clientFetch";
 
 export function useFetchData(apiPath, limit) {
     const [data, setData] = useState([]);

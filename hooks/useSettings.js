@@ -1,5 +1,6 @@
 "use client"
 
+import { api } from "@/utils/clientFetch";
 import { useCallback, useEffect, useState } from "react";
 
 function useSettings() {
@@ -9,7 +10,7 @@ function useSettings() {
   const [sms, setSMS] = useState(false)
 
   const fetchSettings = useCallback(async () => {
-    const res = await fetch(`/api/settings`, { credentials: "include" });
+    const res = await api("/v2/settings");
     const data = await res.json()
     setLimit(data?.perPage)
     setDarkMode(data?.darkMode)

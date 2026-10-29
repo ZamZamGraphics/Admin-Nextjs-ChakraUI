@@ -5,6 +5,7 @@ import { updateCourse } from "@/app/actions/courses";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react"
 import { useFormStatus } from "react-dom"
+import { api } from "@/utils/clientFetch";
 
 function CourseEdit() {
     const searchParams = useSearchParams();
@@ -28,9 +29,7 @@ function CourseEdit() {
     useEffect(() => {
         async function fetchCourse() {
             try {
-                const res = await fetch(`/api/courses/${id}`, {
-                    credentials: "include",
-                })
+                const res = await api(`/v2/courses/${id}`)
                 const response = await res.json()
                 if (response) {
                     setCourse({
