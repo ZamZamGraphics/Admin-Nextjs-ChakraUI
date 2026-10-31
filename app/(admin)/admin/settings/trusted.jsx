@@ -85,13 +85,13 @@ function TrustedComponent({ devices, onDeleted }) {
         if(browser === "Chrome") {
             imagePath = "/browser/chrome.png"
         } else if (browser === "Firefox"){
-            imagePath = "/browser/chrome.png"
+            imagePath = "/browser/firefox.png"
         } else if(browser === "Edge") {
-            imagePath = "/browser/chrome.png"
+            imagePath = "/browser/edge.png"
         } else if(browser === "Safari") {
-            imagePath = "/browser/chrome.png"
+            imagePath = "/browser/safari.png"
         } else if(browser === "Opera") {
-            imagePath = "/browser/chrome.png"
+            imagePath = "/browser/opera.png"
         } else {
             imagePath = "/browser/chrome.png"
         }
